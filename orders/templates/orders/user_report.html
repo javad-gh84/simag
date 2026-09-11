@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}گزارش کاربران | سیماگ{% endblock %}
+
+{% block category_section %}{% endblock %}
+{% block hero_section %}{% endblock %}
+{% block product_section %}{% endblock %}
+
+{% block content %}
+
+<div style="max-width:1350px;margin:30px auto;padding:0 16px;">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;flex-wrap:wrap;gap:12px;">
+        <div>
+            <h1 style="font-size:28px;font-weight:900;color:var(--dark);">👥 گزارش کاربران</h1>
+            <p style="color:var(--gray);">کاربران فعال و میزان خرید</p>
+        </div>
+        <a href="{% url 'orders:reports_dashboard' %}" style="padding:10px 24px;border-radius:40px;background:var(--primary);color:#fff;text-decoration:none;font-weight:600;">← بازگشت</a>
+    </div>
+
+    <div style="background:var(--white);border-radius:24px;padding:20px;border:1px solid #ecf3ec;box-shadow:var(--shadow);overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+            <thead>
+                <tr style="border-bottom:2px solid #ecf3ec;">
+                    <th style="padding:12px 8px;text-align:right;">#</th>
+                    <th style="padding:12px 8px;text-align:right;">شماره موبایل</th>
+                    <th style="padding:12px 8px;text-align:right;">نام</th>
+                    <th style="padding:12px 8px;text-align:right;">تعداد سفارش</th>
+                    <th style="padding:12px 8px;text-align:right;">مجموع خرید</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr style="border-bottom:1px solid #ecf3ec;">
+                    <td style="padding:12px 8px;font-weight:600;">{{ forloop.counter }}</td>
+                    <td style="padding:12px 8px;font-weight:700;color:var(--primary-dark);">{{ user.phone }}</td>
+                    <td style="padding:12px 8px;">{{ user.full_name|default:'-' }}</td>
+                    <td style="padding:12px 8px;font-weight:700;color:#2196f3;">{{ user.order_count }}</td>
+                    <td style="padding:12px 8px;font-weight:700;color:var(--primary-dark);">{{ user.total_spent|default:0|floatformat:0 }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" style="padding:40px;text-align:center;color:var(--gray);">هیچ کاربری وجود ندارد.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<style>
+    body.dark-mode .table-box {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /accounts/
+Disallow: /cart/
+Disallow: /admin/
+Disallow: /orders/
+Sitemap: http://127.0.0.1:8000/sitemap.xml

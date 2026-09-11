@@ -1,0 +1,490 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} | سیماگ{% endblock %}
+{% block hero_section %}{% endblock %}
+{% block title %}{{ product.name }} | سیماگ{% endblock %}
+{% block meta_description %}{{ product.description|truncatewords:20 }}{% endblock %}
+{% block meta_keywords %}{{ product.name }}, {{ product.category.name }}, خرید {{ product.name }}{% endblock %}
+{% block og_image %}{% if product.images.first %}{{ product.images.first.image.url }}{% else %}{% static 'images/logo.png' %}{% endif %}{% endblock %}
+{% block content %}
+
+<style>
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+    @keyframes zoomIn {
+        from { transform: scale(0.8); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    .fade-in-up {
+        animation: fadeInUp 0.6s ease-out both;
+    }
+    .fade-in-up-delay-1 { animation-delay: 0.1s; }
+    .fade-in-up-delay-2 { animation-delay: 0.2s; }
+    .fade-in-up-delay-3 { animation-delay: 0.3s; }
+    .fade-in-up-delay-4 { animation-delay: 0.4s; }
+    .pulse-on-hover:hover {
+        animation: pulse 0.5s ease-in-out;
+    }
+    .product-gallery-thumb {
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+    .product-gallery-thumb:hover {
+        transform: translateY(-4px) scale(1.05);
+        border-color: var(--primary);
+    }
+    .product-gallery-thumb.active {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(76, 175, 122, 0.2);
+    }
+    .quantity-btn {
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        cursor: pointer;
+        user-select: none;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: var(--primary-soft);
+        color: var(--dark);
+        font-size: 20px;
+        font-weight: 700;
+        border: none;
+    }
+    .quantity-btn:hover {
+        transform: scale(1.1);
+        background: var(--primary);
+        color: #fff;
+    }
+    .quantity-btn:active {
+        transform: scale(0.85);
+    }
+    .spec-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 16px;
+        border-bottom: 1px solid rgba(0,0,0,0.04);
+        transition: all 0.3s ease;
+    }
+    .spec-item:hover {
+        background: var(--primary-soft);
+        border-radius: 12px;
+    }
+    .variant-btn {
+        padding: 8px 20px;
+        border-radius: 30px;
+        border: 1.5px solid #ecf3ec;
+        background: var(--white);
+        color: var(--dark);
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        font-family: inherit;
+    }
+    .variant-btn:hover {
+        border-color: var(--primary);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(76,175,122,0.1);
+    }
+    .variant-btn.active {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #fff;
+    }
+    .variant-btn.out-of-stock {
+        opacity: 0.4;
+        cursor: not-allowed;
+        text-decoration: line-through;
+    }
+    .badge-custom {
+        padding: 4px 16px;
+        border-radius: 30px;
+        font-size: 11px;
+        font-weight: 700;
+        display: inline-block;
+    }
+    .badge-in-stock { background: #e8f5e9; color: #2e7d32; }
+    .badge-out-of-stock { background: #fce4ec; color: #c62828; }
+    .badge-limited { background: #fff3e0; color: #e65100; }
+
+    .main-image-container {
+        position: relative;
+        overflow: hidden;
+        border-radius: 30px;
+        background: var(--primary-soft);
+        cursor: zoom-in;
+    }
+    .main-image-container img {
+        width: 100%;
+        height: 500px;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    .main-image-container:hover img {
+        transform: scale(1.05);
+    }
+
+    .related-product {
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        cursor: pointer;
+        border-radius: 24px;
+        overflow: hidden;
+        border: 1px solid #ecf3ec;
+        box-shadow: var(--shadow);
+    }
+    .related-product:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+    }
+    .related-product img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    .related-product:hover img {
+        transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+        .main-image-container img {
+            height: 300px;
+        }
+        .detail-grid {
+            grid-template-columns: 1fr !important;
+        }
+        .spec-grid {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+
+<div style="max-width:1350px;margin:40px auto;padding:0 16px;">
+
+    <!-- ===== مسیر (Breadcrumb) ===== -->
+    <div style="margin-bottom:30px;font-size:14px;color:var(--gray);display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <a href="{% url 'products:home' %}" style="color:var(--primary);text-decoration:none;">خانه</a>
+        <span>/</span>
+        <a href="{% url 'products:product_list' %}" style="color:var(--primary);text-decoration:none;">محصولات</a>
+        <span>/</span>
+        <a href="{% url 'products:product_list' %}?category={{ product.category.slug }}" style="color:var(--primary);text-decoration:none;">{{ product.category.name }}</a>
+        <span>/</span>
+        <span style="color:var(--dark);font-weight:600;">{{ product.name|truncatechars:30 }}</span>
+    </div>
+
+    <div class="detail-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:50px;">
+
+        <!-- ===== ستون چپ: گالری عکس ===== -->
+        <div class="fade-in-up">
+
+            <!-- ===== عکس اصلی ===== -->
+            <div class="main-image-container">
+                {% if images %}
+                <img id="mainImage" src="{{ images.first.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                <div style="width:100%;height:500px;display:flex;align-items:center;justify-content:center;font-size:80px;color:var(--gray);">
+                    ☕
+                </div>
+                {% endif %}
+                <!-- ===== نشان‌ها ===== -->
+                <div style="position:absolute;top:16px;right:16px;display:flex;flex-direction:column;gap:8px;">
+                    {% if product.is_active %}
+                    <span class="badge-custom badge-in-stock">✅ موجود</span>
+                    {% else %}
+                    <span class="badge-custom badge-out-of-stock">❌ ناموجود</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- ===== ریز عکس‌ها ===== -->
+            {% if images %}
+            <div style="display:flex;gap:10px;margin-top:16px;overflow-x:auto;padding-bottom:8px;">
+                {% for img in images %}
+                <div class="product-gallery-thumb {% if forloop.first %}active{% endif %}" onclick="changeImage('{{ img.image.url }}', this)">
+                    <img src="{{ img.image.url }}" alt="{{ product.name }}" style="width:80px;height:80px;object-fit:cover;border-radius:16px;">
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+        </div>
+
+        <!-- ===== ستون راست: اطلاعات محصول ===== -->
+        <div>
+
+            <!-- ===== نام و برند ===== -->
+            <div class="fade-in-up fade-in-up-delay-1">
+                <h1 style="font-size:32px;font-weight:900;color:var(--dark);line-height:1.2;">
+                    {{ product.name }}
+                </h1>
+                {% if product.brand %}
+                <div style="margin-top:4px;color:var(--gray);font-size:14px;">
+                    برند: <span style="font-weight:600;color:var(--dark);">{{ product.brand }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- ===== قیمت ===== -->
+            <div class="fade-in-up fade-in-up-delay-2" style="margin:16px 0;">
+                <div style="display:flex;align-items:center;gap:16px;">
+                    <span style="font-size:34px;font-weight:900;color:var(--primary-dark);">
+                        {{ product.price|floatformat:0 }} تومان
+                    </span>
+                </div>
+            </div>
+
+            <!-- ===== مشخصات ===== -->
+            <div class="fade-in-up fade-in-up-delay-3" style="background:var(--primary-soft);border-radius:24px;padding:20px;margin:20px 0;">
+                <div class="spec-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+                    {% if product.material %}
+                    <div class="spec-item">
+                        <span style="color:var(--gray);font-size:13px;">🧵 جنس</span>
+                        <span style="font-weight:600;color:var(--dark);font-size:13px;">{{ product.material }}</span>
+                    </div>
+                    {% endif %}
+                    {% if product.volume %}
+                    <div class="spec-item">
+                        <span style="color:var(--gray);font-size:13px;">📏 حجم</span>
+                        <span style="font-weight:600;color:var(--dark);font-size:13px;">{{ product.volume }}</span>
+                    </div>
+                    {% endif %}
+                    {% if product.color %}
+                    <div class="spec-item">
+                        <span style="color:var(--gray);font-size:13px;">🎨 رنگ</span>
+                        <span style="font-weight:600;color:var(--dark);font-size:13px;">{{ product.color }}</span>
+                    </div>
+                    {% endif %}
+                    {% if product.weight %}
+                    <div class="spec-item">
+                        <span style="color:var(--gray);font-size:13px;">⚖️ وزن</span>
+                        <span style="font-weight:600;color:var(--dark);font-size:13px;">{{ product.weight }}</span>
+                    </div>
+                    {% endif %}
+                    {% if product.category %}
+                    <div class="spec-item">
+                        <span style="color:var(--gray);font-size:13px;">📂 دسته‌بندی</span>
+                        <span style="font-weight:600;color:var(--dark);font-size:13px;">{{ product.category.name }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- ===== توضیحات ===== -->
+            <div class="fade-in-up fade-in-up-delay-4">
+                <h3 style="font-size:16px;font-weight:800;color:var(--dark);margin-bottom:8px;">📖 توضیحات</h3>
+                <p style="color:var(--gray);font-size:14px;line-height:2;">
+                    {{ product.description }}
+                </p>
+            </div>
+
+            <!-- ===== تنوع‌ها ===== -->
+            {% if variants %}
+            <div class="fade-in-up" style="margin:20px 0;padding:20px;background:var(--white);border-radius:24px;border:1px solid #ecf3ec;box-shadow:var(--shadow);">
+                <h4 style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:12px;">🎨 انتخاب تنوع</h4>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                    {% for variant in variants %}
+                    <button class="variant-btn {% if forloop.first %}active{% endif %} {% if variant.stock == 0 %}out-of-stock{% endif %}"
+                            onclick="selectVariant(this, {{ variant.id }}, {{ variant.price_adjustment|floatformat:0 }})">
+                        {{ variant.color }}
+                        {% if variant.size %}
+                        <span style="font-size:11px;color:var(--gray);">({{ variant.size }})</span>
+                        {% endif %}
+                        <span style="font-size:10px;color:{% if variant.stock > 0 %}var(--primary){% else %}#e74c3c{% endif %};">
+                            {% if variant.stock > 0 %}✓ موجود{% else %}✕ ناموجود{% endif %}
+                        </span>
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- ===== تعداد + دکمه‌ها ===== -->
+            <div class="fade-in-up" style="margin:24px 0;">
+
+                <!-- ===== انتخاب تعداد ===== -->
+                <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+                    <span style="font-weight:600;color:var(--dark);font-size:14px;">تعداد:</span>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <button class="quantity-btn" onclick="changeQuantity(-1)">−</button>
+                        <span id="productQuantity" style="font-weight:700;font-size:20px;min-width:40px;text-align:center;color:var(--dark);">1</span>
+                        <button class="quantity-btn" onclick="changeQuantity(1)">+</button>
+                    </div>
+                </div>
+
+                <!-- ===== دکمه‌ها ===== -->
+                <div style="display:flex;flex-wrap:wrap;gap:12px;">
+
+                    <a href="{% url 'cart:add_to_cart' product.id %}" 
+                       style="flex:1;min-width:200px;padding:16px 32px;border-radius:60px;border:none;background:linear-gradient(135deg,#4caf7a,#2d8f5a,#1f6e43);background-size:200% auto;color:#fff;font-weight:700;font-size:16px;text-decoration:none;text-align:center;transition:all 0.4s ease;box-shadow:0 8px 30px rgba(76,175,122,0.3);cursor:pointer;"
+                       onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.backgroundPosition='right center';this.style.boxShadow='0 12px 40px rgba(76,175,122,0.4)'" 
+                       onmouseout="this.style.transform='translateY(0) scale(1)';this.style.backgroundPosition='left center';this.style.boxShadow='0 8px 30px rgba(76,175,122,0.3)'">
+                        🛒 افزودن به سبد خرید
+                    </a>
+
+                    <!-- ===== دکمه علاقه‌مندی ===== -->
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'accounts:add_to_wishlist' product.id %}" 
+                       style="padding:16px 24px;border-radius:60px;border:1.5px solid #e74c3c;background:{% if is_in_wishlist %}#e74c3c{% else %}transparent{% endif %};color:{% if is_in_wishlist %}#fff{% else %}#e74c3c{% endif %};font-weight:700;font-size:16px;text-decoration:none;transition:all 0.3s ease;display:inline-flex;align-items:center;gap:8px;"
+                       onmouseover="this.style.background='#e74c3c';this.style.color='#fff';this.style.transform='translateY(-2px)'" 
+                       onmouseout="this.style.background='{% if is_in_wishlist %}#e74c3c{% else %}transparent{% endif %}';this.style.color='{% if is_in_wishlist %}#fff{% else %}#e74c3c{% endif %}';this.style.transform='translateY(0)'">
+                        ❤️ {% if is_in_wishlist %}حذف از علاقه‌مندی‌ها{% else %}علاقه‌مندی{% endif %}
+                    </a>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <!-- ===== ضمانت‌ها ===== -->
+            <div class="fade-in-up" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;padding:20px;background:var(--primary-soft);border-radius:24px;">
+
+                <div style="text-align:center;">
+                    <div style="font-size:28px;">✅</div>
+                    <div style="font-weight:700;color:var(--dark);font-size:13px;">پرداخت امن</div>
+                    <div style="font-size:11px;color:var(--gray);">اطلاعات شما محفوظ است</div>
+                </div>
+
+                <div style="text-align:center;">
+                    <div style="font-size:28px;">🚚</div>
+                    <div style="font-weight:700;color:var(--dark);font-size:13px;">ارسال سریع</div>
+                    <div style="font-size:11px;color:var(--gray);">۲۴ ساعته در تهران</div>
+                </div>
+
+                <div style="text-align:center;">
+                    <div style="font-size:28px;">🔄</div>
+                    <div style="font-weight:700;color:var(--dark);font-size:13px;">ضمانت بازگشت</div>
+                    <div style="font-size:11px;color:var(--gray);">۷ روز ضمانت</div>
+                </div>
+
+                <div style="text-align:center;">
+                    <div style="font-size:28px;">⭐</div>
+                    <div style="font-weight:700;color:var(--dark);font-size:13px;">کیفیت تضمینی</div>
+                    <div style="font-size:11px;color:var(--gray);">محصولات اصل و با کیفیت</div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ===== محصولات مرتبط ===== -->
+    {% if related_products %}
+    <div style="margin-top:60px;">
+        <h2 style="font-size:24px;font-weight:900;color:var(--dark);margin-bottom:20px;display:flex;align-items:center;gap:12px;">
+            🔥 محصولات مرتبط
+            <span style="font-size:13px;font-weight:400;color:var(--gray);">شاید اینها را هم دوست داشته باشید</span>
+        </h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;">
+            {% for related in related_products %}
+            <a href="{% url 'products:product_detail' related.slug %}" class="related-product" style="text-decoration:none;color:inherit;display:block;">
+                <div style="position:relative;background:var(--primary-soft);height:180px;display:flex;align-items:center;justify-content:center;">
+                    {% if related.images.first %}
+                    <img src="{{ related.images.first.image.url }}" alt="{{ related.name }}">
+                    {% else %}
+                    <span style="font-size:48px;">☕</span>
+                    {% endif %}
+                </div>
+                <div style="padding:16px;text-align:center;">
+                    <h4 style="font-weight:700;color:var(--dark);font-size:14px;">{{ related.name|truncatechars:25 }}</h4>
+                    <div style="color:var(--primary-dark);font-weight:700;font-size:16px;margin-top:4px;">
+                        {{ related.price|floatformat:0 }} تومان
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+<!-- ===== اسکریپت‌ها ===== -->
+<script>
+    // ===== تغییر عکس اصلی =====
+    function changeImage(imageUrl, element) {
+        document.getElementById('mainImage').src = imageUrl;
+        document.querySelectorAll('.product-gallery-thumb').forEach(el => {
+            el.classList.remove('active');
+        });
+        element.classList.add('active');
+    }
+
+    // ===== تغییر تعداد =====
+    let quantity = 1;
+
+    function changeQuantity(amount) {
+        quantity = Math.max(1, quantity + amount);
+        document.getElementById('productQuantity').textContent = quantity;
+    }
+
+    // ===== انتخاب تنوع =====
+    function selectVariant(element, variantId, priceAdjustment) {
+        document.querySelectorAll('.variant-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        element.classList.add('active');
+        
+        // آپدیت قیمت (اگه نیاز باشه)
+        const basePrice = {{ product.price }};
+        const newPrice = basePrice + priceAdjustment;
+        // اینجا می‌تونی قیمت رو آپدیت کنی
+    }
+
+    // ===== اسکرول به بالا برای موبایل =====
+    document.addEventListener('DOMContentLoaded', function() {
+        // هر لینک داخلی که به product_detail میره
+        const productLinks = document.querySelectorAll('a[href*="product/"]');
+        productLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                // اجازه بده لینک کار خودش رو بکنه
+            });
+        });
+    });
+</script>
+
+<style>
+    body.dark-mode .product-gallery-thumb {
+        border-color: #2a4036;
+    }
+    body.dark-mode .product-gallery-thumb.active {
+        border-color: var(--primary);
+    }
+    body.dark-mode .spec-item {
+        border-bottom-color: rgba(255,255,255,0.04);
+    }
+    body.dark-mode .variant-btn {
+        background: #1b2a24;
+        border-color: #2a4036;
+        color: #e0ede6;
+    }
+    body.dark-mode .variant-btn.active {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #fff;
+    }
+    body.dark-mode .related-product {
+        border-color: #2a4036;
+        background: #1b2a24;
+    }
+    body.dark-mode .related-product h4 {
+        color: #e0ede6;
+    }
+</style>
+
+{% endblock %}

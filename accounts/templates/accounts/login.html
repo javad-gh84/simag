@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ورود | سیماگ{% endblock %}
+
+{% block category_section %}{% endblock %}
+
+{% block content %}
+
+<div class="container" style="max-width:450px;margin:60px auto;padding:40px;background:var(--white);border-radius:38px;border:1px solid #ecf3ec;box-shadow:var(--shadow);">
+
+    <h1 style="text-align:center;font-size:28px;font-weight:900;color:var(--dark);margin-bottom:8px;">
+        👋 خوش برگشتی!
+    </h1>
+    <p style="text-align:center;color:var(--gray);margin-bottom:30px;">
+        شماره موبایل خود را وارد کنید.
+    </p>
+
+    {% if error %}
+    <div style="background:#fee;border-radius:20px;padding:12px 20px;margin-bottom:20px;border-right:4px solid #e74c3c;">
+        <p style="color:#e74c3c;font-size:14px;margin:0;">⚠️ {{ error }}</p>
+    </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'accounts:login' %}">
+        {% csrf_token %}
+
+        <div style="margin-bottom:20px;">
+            <label for="identifier" style="display:block;font-weight:600;color:var(--dark);margin-bottom:6px;">
+                📱 شماره موبایل
+            </label>
+            <input type="text" name="identifier" id="identifier" placeholder="مثال: 09123456789" required
+            style="width:100%;padding:14px 20px;border-radius:30px;border:1.5px solid #ecf3ec;font-family:inherit;font-size:16px;transition:all 0.3s ease;background:var(--primary-soft);color:var(--dark);"
+            onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='#ecf3ec'">
+        </div>
+
+        <button type="submit" style="width:100%;padding:16px;border-radius:60px;border:none;background:linear-gradient(135deg,#4caf7a 0%,#2d8f5a 50%,#1f6e43 100%);color:#fff;font-weight:700;font-size:18px;cursor:pointer;transition:all 0.3s ease;box-shadow:0 8px 30px rgba(76,175,122,0.3);">
+            دریافت کد تایید
+        </button>
+    </form>
+
+    <div style="text-align:center;margin-top:20px;">
+        <p style="color:var(--gray);font-size:14px;">
+            حساب کاربری ندارید؟
+            <a href="{% url 'accounts:register' %}" style="color:var(--primary);font-weight:700;text-decoration:none;">
+                ثبت‌نام کنید
+            </a>
+        </p>
+    </div>
+</div>
+
+<style>
+    body.dark-mode .login-box {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .login-box h1 {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .login-box input {
+        background: #0f1915 !important;
+        color: #e0ede6 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .login-box label {
+        color: #e0ede6 !important;
+    }
+</style>
+
+{% endblock %}

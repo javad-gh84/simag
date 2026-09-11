@@ -1,0 +1,341 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}علاقه‌مندی‌ها | سیماگ{% endblock %}
+
+{% block category_section %}{% endblock %}
+{% block hero_section %}{% endblock %}
+{% block offer_section %}{% endblock %}
+{% block product_section %}{% endblock %}
+{% block testimonial_section %}{% endblock %}
+
+{% block content %}
+
+<style>
+    .wishlist-container {
+        max-width: 1350px;
+        margin: 40px auto;
+        padding: 0 16px;
+    }
+    .wishlist-grid {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 30px;
+    }
+    .sidebar {
+        background: var(--white);
+        border-radius: 30px;
+        padding: 25px;
+        border: 1px solid #ecf3ec;
+        box-shadow: var(--shadow);
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+    }
+    .sidebar-user {
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #ecf3ec;
+    }
+    .sidebar-avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: linear-gradient(145deg, #4caf7a, #2d8f5a);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        color: #fff;
+        margin: 0 auto 10px;
+    }
+    .sidebar-name {
+        font-weight: 700;
+        color: var(--dark);
+        font-size: 16px;
+    }
+    .sidebar-phone {
+        font-size: 12px;
+        color: var(--gray);
+    }
+    .sidebar-menu {
+        margin-top: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .sidebar-menu a {
+        padding: 10px 16px;
+        border-radius: 16px;
+        color: var(--dark);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+    .sidebar-menu a:hover {
+        background: var(--primary-soft);
+    }
+    .sidebar-menu a.active {
+        background: var(--primary);
+        color: #fff;
+        font-weight: 600;
+    }
+    .sidebar-logout {
+        margin-top: 8px;
+        width: 100%;
+        padding: 10px 16px;
+        border-radius: 16px;
+        border: 1.5px solid #e74c3c;
+        background: transparent;
+        color: #e74c3c;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+    .sidebar-logout:hover {
+        background: #fee;
+    }
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .page-title {
+        font-size: 28px;
+        font-weight: 900;
+        color: var(--dark);
+    }
+    .page-sub {
+        color: var(--gray);
+    }
+    .wishlist-grid-products {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+    }
+    .wishlist-card {
+        background: var(--white);
+        border-radius: 24px;
+        padding: 20px;
+        border: 1px solid #ecf3ec;
+        box-shadow: var(--shadow);
+        text-align: center;
+        transition: all 0.4s ease;
+        position: relative;
+    }
+    .wishlist-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+    }
+    .wishlist-icon {
+        font-size: 52px;
+        margin-bottom: 8px;
+        display: block;
+    }
+    .wishlist-name {
+        font-weight: 700;
+        color: var(--dark);
+        font-size: 15px;
+        text-decoration: none;
+    }
+    .wishlist-price {
+        color: var(--primary-dark);
+        font-weight: 700;
+        font-size: 18px;
+        margin-top: 6px;
+    }
+    .wishlist-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .btn-remove {
+        padding: 6px 16px;
+        border-radius: 20px;
+        background: #fee;
+        color: #e74c3c;
+        font-weight: 600;
+        font-size: 12px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+    .btn-remove:hover {
+        background: #e74c3c;
+        color: #fff;
+    }
+    .btn-buy {
+        padding: 6px 16px;
+        border-radius: 20px;
+        background: var(--primary);
+        color: #fff;
+        font-weight: 600;
+        font-size: 12px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    .btn-buy:hover {
+        transform: scale(1.05);
+    }
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: var(--white);
+        border-radius: 30px;
+        border: 1px solid #ecf3ec;
+        box-shadow: var(--shadow);
+    }
+    .empty-icon {
+        font-size: 64px;
+        margin-bottom: 16px;
+    }
+    .empty-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--dark);
+    }
+    .empty-desc {
+        color: var(--gray);
+        margin-top: 8px;
+    }
+    .btn-primary-custom {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 12px 40px;
+        border-radius: 60px;
+        border: none;
+        background: linear-gradient(135deg, #4caf7a 0%, #2d8f5a 50%, #1f6e43 100%);
+        color: #fff;
+        font-weight: 700;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(76, 175, 122, 0.3);
+    }
+
+    body.dark-mode .sidebar {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .sidebar-name {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .sidebar-menu a {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .sidebar-menu a:hover {
+        background: rgba(76, 175, 122, 0.12) !important;
+    }
+    body.dark-mode .sidebar-menu a.active {
+        background: var(--primary) !important;
+        color: #fff !important;
+    }
+    body.dark-mode .wishlist-card {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .wishlist-name {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .page-title {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .empty-state {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .empty-title {
+        color: #e0ede6 !important;
+    }
+
+    @media (max-width: 992px) {
+        .wishlist-grid {
+            grid-template-columns: 1fr;
+        }
+        .sidebar {
+            position: static;
+        }
+    }
+</style>
+
+<div class="wishlist-container">
+
+    <div class="wishlist-grid">
+
+        <!-- ===== منوی کناری ===== -->
+        <div class="sidebar">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar">{{ user.phone|slice:":2" }}</div>
+                <div class="sidebar-name">{{ user.full_name|default:user.phone }}</div>
+                <div class="sidebar-phone">{{ user.phone }}</div>
+            </div>
+            <div class="sidebar-menu">
+                <a href="{% url 'accounts:dashboard' %}">📊 داشبورد</a>
+                <a href="{% url 'accounts:orders' %}">📋 سفارشات</a>
+                <a href="{% url 'accounts:wishlist' %}" class="active">❤️ علاقه‌مندی‌ها</a>
+                <a href="{% url 'accounts:edit_profile' %}">👤 ویرایش پروفایل</a>
+                <a href="{% url 'accounts:change_password' %}">🔒 تغییر رمز عبور</a>
+                <form method="post" action="{% url 'accounts:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="sidebar-logout">🚪 خروج</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ===== محتوای اصلی ===== -->
+        <div>
+
+            <div class="page-header">
+                <div>
+                    <div class="page-title">❤️ علاقه‌مندی‌ها</div>
+                    <div class="page-sub">محصولاتی که ذخیره کرده‌اید</div>
+                </div>
+            </div>
+
+            {% if wishlist.products.all %}
+            <div class="wishlist-grid-products">
+                {% for product in wishlist.products.all %}
+                <div class="wishlist-card">
+                    <a href="{% url 'products:product_detail' product.slug %}" style="text-decoration:none;">
+                        <span class="wishlist-icon">☕</span>
+                        <div class="wishlist-name">{{ product.name|truncatechars:20 }}</div>
+                        <div class="wishlist-price">{{ product.price|floatformat:0 }} تومان</div>
+                    </a>
+                    <div class="wishlist-actions">
+                        <a href="{% url 'accounts:remove_from_wishlist' product.id %}" class="btn-remove" onclick="return confirm('آیا از حذف این محصول از علاقه‌مندی‌ها مطمئن هستید؟')">
+                            ✕ حذف
+                        </a>
+                        <a href="{% url 'cart:add_to_cart' product.id %}" class="btn-buy">
+                            🛒 خرید
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">❤️</div>
+                <div class="empty-title">علاقه‌مندی‌ها خالی است</div>
+                <div class="empty-desc">هنوز محصولی به علاقه‌مندی‌های خود اضافه نکرده‌اید.</div>
+                <a href="{% url 'products:product_list' %}" class="btn-primary-custom">🛒 مشاهده محصولات</a>
+            </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}افزودن دسته‌بندی | سیماگ{% endblock %}
+
+{% block category_section %}{% endblock %}
+{% block hero_section %}{% endblock %}
+{% block product_section %}{% endblock %}
+
+{% block content %}
+
+<div style="max-width:600px;margin:30px auto;padding:0 16px;">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;flex-wrap:wrap;gap:12px;">
+        <div>
+            <h1 style="font-size:28px;font-weight:900;color:var(--dark);">➕ افزودن دسته‌بندی</h1>
+            <p style="color:var(--gray);">دسته‌بندی جدید ایجاد کنید</p>
+        </div>
+        <a href="{% url 'accounts:admin_categories' %}" style="padding:10px 24px;border-radius:40px;background:var(--primary);color:#fff;text-decoration:none;font-weight:600;transition:all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+            ← بازگشت
+        </a>
+    </div>
+
+    <div style="background:var(--white);border-radius:24px;padding:30px;border:1px solid #ecf3ec;box-shadow:var(--shadow);">
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div style="margin-bottom:16px;">
+                <label for="name" style="display:block;font-weight:600;color:var(--dark);margin-bottom:6px;">نام دسته‌بندی *</label>
+                <input type="text" name="name" id="name" required style="width:100%;padding:12px 18px;border-radius:30px;border:1.5px solid #ecf3ec;font-family:inherit;font-size:14px;background:var(--primary-soft);color:var(--dark);outline:none;">
+            </div>
+
+            <!-- ===== فیلد آپلود عکس ===== -->
+            <div style="margin-bottom:16px;">
+                <label for="image" style="display:block;font-weight:600;color:var(--dark);margin-bottom:6px;">🖼️ تصویر دسته‌بندی</label>
+                <input type="file" name="image" id="image" accept="image/*" style="width:100%;padding:12px 18px;border-radius:30px;border:1.5px solid #ecf3ec;font-family:inherit;font-size:14px;background:var(--primary-soft);color:var(--dark);outline:none;">
+                <div style="font-size:11px;color:var(--gray);margin-top:4px;">فرمت‌های مجاز: JPG، PNG • حداکثر ۲ مگابایت</div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+                <input type="checkbox" name="is_active" checked style="width:20px;height:20px;">
+                <label style="font-weight:600;color:var(--dark);">فعال</label>
+            </div>
+
+            <button type="submit" style="width:100%;padding:14px;border-radius:60px;border:none;background:linear-gradient(135deg,#4caf7a,#2d8f5a);color:#fff;font-weight:700;font-size:16px;cursor:pointer;transition:all 0.3s ease;box-shadow:0 8px 30px rgba(76,175,122,0.25);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 40px rgba(76,175,122,0.35)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 30px rgba(76,175,122,0.25)'">
+                ✅ افزودن دسته‌بندی
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<style>
+    body.dark-mode .add-box {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .add-box input {
+        background: #0f1915 !important;
+        color: #e0ede6 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .add-box label {
+        color: #e0ede6 !important;
+    }
+</style>
+
+{% endblock %}

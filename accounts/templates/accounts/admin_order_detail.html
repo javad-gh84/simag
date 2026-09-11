@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}جزئیات سفارش | سیماگ{% endblock %}
+
+{% block category_section %}{% endblock %}
+{% block hero_section %}{% endblock %}
+{% block product_section %}{% endblock %}
+
+{% block content %}
+
+<div style="max-width:1200px;margin:30px auto;padding:0 16px;">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;flex-wrap:wrap;gap:12px;">
+        <div>
+            <h1 style="font-size:28px;font-weight:900;color:var(--dark);">📋 سفارش #{{ order.order_number }}</h1>
+            <p style="color:var(--gray);">{{ order.user.phone }} - {{ order.created_at|date:"Y/m/d H:i" }}</p>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <a href="{% url 'accounts:admin_orders' %}" style="padding:10px 24px;border-radius:40px;background:var(--primary);color:#fff;text-decoration:none;font-weight:600;transition:all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                ← بازگشت
+            </a>
+            <a href="{% url 'accounts:admin_order_delete' order.id %}" style="padding:10px 24px;border-radius:40px;background:#fee;color:#e74c3c;text-decoration:none;font-weight:600;border:1px solid #e74c3c;transition:all 0.3s ease;" onmouseover="this.style.background='#e74c3c';this.style.color='#fff'" onmouseout="this.style.background='#fee';this.style.color='#e74c3c'">
+                🗑️ حذف
+            </a>
+        </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:30px;">
+
+        <div style="background:var(--white);border-radius:24px;padding:24px;border:1px solid #ecf3ec;box-shadow:var(--shadow);">
+
+            <h3 style="font-size:18px;font-weight:800;color:var(--dark);margin-bottom:16px;">📦 محصولات سفارش</h3>
+
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                {% for item in order.items.all %}
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--primary-soft);border-radius:12px;">
+                    <div>
+                        <div style="font-weight:700;color:var(--dark);">{{ item.product.name }}</div>
+                        <div style="font-size:12px;color:var(--gray);">تعداد: {{ item.quantity }} × {{ item.price|floatformat:0 }} تومان</div>
+                    </div>
+                    <div style="font-weight:700;color:var(--primary-dark);">{{ item.total_price|floatformat:0 }}</div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div style="margin-top:16px;padding-top:16px;border-top:2px solid #ecf3ec;">
+                <div style="display:flex;justify-content:space-between;font-weight:700;font-size:18px;">
+                    <span>جمع کل</span>
+                    <span style="color:var(--primary-dark);">{{ order.total_amount|floatformat:0 }} تومان</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--gray);margin-top:4px;">
+                    <span>هزینه ارسال</span>
+                    <span>{{ order.shipping_cost|floatformat:0 }} تومان</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:14px;color:var(--gray);">
+                    <span>تخفیف</span>
+                    <span>{{ order.discount_amount|floatformat:0 }} تومان</span>
+                </div>
+            </div>
+
+            {% if order.shipping_address %}
+            <div style="margin-top:16px;padding-top:16px;border-top:1px solid #ecf3ec;">
+                <div style="font-weight:700;color:var(--dark);">📍 آدرس ارسال</div>
+                <div style="color:var(--gray);font-size:14px;margin-top:4px;">{{ order.shipping_address }}</div>
+            </div>
+            {% endif %}
+
+            {% if order.tracking_code %}
+            <div style="margin-top:16px;padding-top:16px;border-top:1px solid #ecf3ec;">
+                <div style="font-weight:700;color:var(--dark);">📦 کد رهگیری</div>
+                <div style="color:var(--gray);font-size:14px;margin-top:4px;">{{ order.tracking_code }}</div>
+            </div>
+            {% endif %}
+
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:20px;">
+
+            <div style="background:var(--white);border-radius:24px;padding:24px;border:1px solid #ecf3ec;box-shadow:var(--shadow);">
+                <h3 style="font-size:16px;font-weight:800;color:var(--dark);margin-bottom:16px;">📌 تغییر وضعیت</h3>
+                <form method="post">
+                    {% csrf_token %}
+                    <select name="status" style="width:100%;padding:12px 16px;border-radius:30px;border:1.5px solid #ecf3ec;font-family:inherit;font-size:14px;background:var(--primary-soft);color:var(--dark);outline:none;appearance:none;">
+                        <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>🟡 در انتظار</option>
+                        <option value="processing" {% if order.status == 'processing' %}selected{% endif %}>🔵 در حال پردازش</option>
+                        <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>🟢 ارسال شده</option>
+                        <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>✅ تحویل داده شده</option>
+                        <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>🔴 لغو شده</option>
+                    </select>
+                    <button type="submit" style="width:100%;padding:12px;border-radius:40px;border:none;background:linear-gradient(135deg,#4caf7a,#2d8f5a);color:#fff;font-weight:700;font-size:14px;cursor:pointer;transition:all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        💾 ذخیره تغییرات
+                    </button>
+                </form>
+            </div>
+
+            <div style="background:var(--white);border-radius:24px;padding:24px;border:1px solid #ecf3ec;box-shadow:var(--shadow);">
+                <h3 style="font-size:16px;font-weight:800;color:var(--dark);margin-bottom:12px;">👤 اطلاعات کاربر</h3>
+                <div style="font-weight:700;color:var(--dark);font-size:16px;">{{ order.user.full_name|default:order.user.phone }}</div>
+                <div style="font-size:13px;color:var(--gray);">📱 {{ order.user.phone }}</div>
+                <div style="font-size:13px;color:var(--gray);">📧 {{ order.user.email|default:'ایمیل ثبت نشده' }}</div>
+                <div style="margin-top:12px;">
+                    <a href="{% url 'accounts:admin_user_detail' order.user.id %}" style="padding:6px 20px;border-radius:30px;background:var(--primary);color:#fff;text-decoration:none;font-weight:600;font-size:13px;display:inline-block;transition:all 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        👤 مشاهده پروفایل
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

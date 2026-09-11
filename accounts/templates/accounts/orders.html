@@ -1,0 +1,356 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}سفارشات | سیماگ{% endblock %}
+
+{% block category_section %}{% endblock %}
+{% block hero_section %}{% endblock %}
+{% block offer_section %}{% endblock %}
+{% block product_section %}{% endblock %}
+{% block testimonial_section %}{% endblock %}
+
+{% block content %}
+
+<style>
+    .orders-container {
+        max-width: 1350px;
+        margin: 40px auto;
+        padding: 0 16px;
+    }
+    .orders-grid {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 30px;
+    }
+    .sidebar {
+        background: var(--white);
+        border-radius: 30px;
+        padding: 25px;
+        border: 1px solid #ecf3ec;
+        box-shadow: var(--shadow);
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+    }
+    .sidebar-user {
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #ecf3ec;
+    }
+    .sidebar-avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: linear-gradient(145deg, #4caf7a, #2d8f5a);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        color: #fff;
+        margin: 0 auto 10px;
+    }
+    .sidebar-name {
+        font-weight: 700;
+        color: var(--dark);
+        font-size: 16px;
+    }
+    .sidebar-phone {
+        font-size: 12px;
+        color: var(--gray);
+    }
+    .sidebar-menu {
+        margin-top: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .sidebar-menu a {
+        padding: 10px 16px;
+        border-radius: 16px;
+        color: var(--dark);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+    .sidebar-menu a:hover {
+        background: var(--primary-soft);
+    }
+    .sidebar-menu a.active {
+        background: var(--primary);
+        color: #fff;
+        font-weight: 600;
+    }
+    .sidebar-logout {
+        margin-top: 8px;
+        width: 100%;
+        padding: 10px 16px;
+        border-radius: 16px;
+        border: 1.5px solid #e74c3c;
+        background: transparent;
+        color: #e74c3c;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+    .sidebar-logout:hover {
+        background: #fee;
+    }
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .page-title {
+        font-size: 28px;
+        font-weight: 900;
+        color: var(--dark);
+    }
+    .page-sub {
+        color: var(--gray);
+    }
+    .order-card {
+        background: var(--white);
+        border-radius: 24px;
+        padding: 20px 24px;
+        border: 1px solid #ecf3ec;
+        box-shadow: var(--shadow);
+        text-decoration: none;
+        transition: all 0.4s ease;
+        display: block;
+        margin-bottom: 16px;
+    }
+    .order-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+    }
+    .order-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .order-id {
+        font-weight: 700;
+        color: var(--dark);
+        font-size: 16px;
+    }
+    .order-date {
+        font-size: 13px;
+        color: var(--gray);
+    }
+    .order-items-count {
+        font-size: 13px;
+        color: var(--gray);
+    }
+    .order-price {
+        font-weight: 700;
+        color: var(--primary-dark);
+        font-size: 20px;
+    }
+    .order-status {
+        padding: 4px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-align: center;
+    }
+    .order-status-pending {
+        background: #fff3e0;
+        color: #e65100;
+    }
+    .order-status-processing {
+        background: #fff8e1;
+        color: #f57f17;
+    }
+    .order-status-shipped {
+        background: #e3f2fd;
+        color: #0d47a1;
+    }
+    .order-status-delivered {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+    .order-status-cancelled {
+        background: #fce4ec;
+        color: #c62828;
+    }
+    .order-tracking {
+        font-size: 11px;
+        color: var(--gray);
+        margin-top: 4px;
+        text-align: center;
+    }
+    .order-arrow {
+        font-size: 24px;
+        color: var(--gray);
+    }
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: var(--white);
+        border-radius: 30px;
+        border: 1px solid #ecf3ec;
+        box-shadow: var(--shadow);
+    }
+    .empty-icon {
+        font-size: 64px;
+        margin-bottom: 16px;
+    }
+    .empty-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--dark);
+    }
+    .empty-desc {
+        color: var(--gray);
+        margin-top: 8px;
+    }
+    .btn-primary-custom {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 12px 40px;
+        border-radius: 60px;
+        border: none;
+        background: linear-gradient(135deg, #4caf7a 0%, #2d8f5a 50%, #1f6e43 100%);
+        color: #fff;
+        font-weight: 700;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(76, 175, 122, 0.3);
+    }
+
+    body.dark-mode .sidebar {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .sidebar-name {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .sidebar-menu a {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .sidebar-menu a:hover {
+        background: rgba(76, 175, 122, 0.12) !important;
+    }
+    body.dark-mode .sidebar-menu a.active {
+        background: var(--primary) !important;
+        color: #fff !important;
+    }
+    body.dark-mode .order-card {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .order-id {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .page-title {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .empty-state {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .empty-title {
+        color: #e0ede6 !important;
+    }
+
+    @media (max-width: 992px) {
+        .orders-grid {
+            grid-template-columns: 1fr;
+        }
+        .sidebar {
+            position: static;
+        }
+    }
+    @media (max-width: 480px) {
+        .order-row {
+            flex-direction: column;
+            text-align: center;
+        }
+        .order-arrow {
+            display: none;
+        }
+    }
+</style>
+
+<div class="orders-container">
+
+    <div class="orders-grid">
+
+        <!-- ===== منوی کناری ===== -->
+        <div class="sidebar">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar">{{ user.phone|slice:":2" }}</div>
+                <div class="sidebar-name">{{ user.full_name|default:user.phone }}</div>
+                <div class="sidebar-phone">{{ user.phone }}</div>
+            </div>
+            <div class="sidebar-menu">
+                <a href="{% url 'accounts:dashboard' %}">📊 داشبورد</a>
+                <a href="{% url 'accounts:orders' %}" class="active">📋 سفارشات</a>
+                <a href="{% url 'accounts:wishlist' %}">❤️ علاقه‌مندی‌ها</a>
+                <a href="{% url 'accounts:edit_profile' %}">👤 ویرایش پروفایل</a>
+                <a href="{% url 'accounts:change_password' %}">🔒 تغییر رمز عبور</a>
+                <form method="post" action="{% url 'accounts:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="sidebar-logout">🚪 خروج</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ===== محتوای اصلی ===== -->
+        <div>
+
+            <div class="page-header">
+                <div>
+                    <div class="page-title">📋 سفارشات من</div>
+                    <div class="page-sub">لیست تمام سفارشات شما</div>
+                </div>
+            </div>
+
+            {% if orders %}
+                {% for order in orders %}
+                <a href="{% url 'accounts:order_detail' order.id %}" class="order-card">
+                    <div class="order-row">
+                        <div>
+                            <div class="order-id">سفارش #{{ order.id }}</div>
+                            <div class="order-date">{{ order.created_at|date:"Y/m/d H:i" }}</div>
+                            <div class="order-items-count">{{ order.items.count }} محصول</div>
+                        </div>
+                        <div class="order-price">{{ order.total_price|floatformat:0 }} تومان</div>
+                        <div style="text-align:center;">
+                            <div class="order-status order-status-{{ order.status }}">{{ order.get_status_display }}</div>
+                            {% if order.tracking_code %}
+                            <div class="order-tracking">📦 کد رهگیری: {{ order.tracking_code }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="order-arrow">›</div>
+                    </div>
+                </a>
+                {% endfor %}
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📦</div>
+                <div class="empty-title">هنوز سفارشی ثبت نکرده‌اید</div>
+                <div class="empty-desc">اولین خرید خود را از فروشگاه سیماگ شروع کنید!</div>
+                <a href="{% url 'products:product_list' %}" class="btn-primary-custom">🛒 شروع خرید</a>
+            </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

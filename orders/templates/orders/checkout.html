@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><title>تسویه حساب</title></head>
+<body>
+    <h1>تسویه حساب</h1>
+    <form method="post">
+        {% csrf_token %}
+        <textarea name="address" placeholder="آدرس کامل" required></textarea><br>
+        <select name="shipping_method">
+            <option value="tipax">تیپاکس</option>
+            <option value="post">پست</option>
+        </select><br>
+        <button type="submit">ثبت سفارش</button>
+    </form>
+</body>
+</html>

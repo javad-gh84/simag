@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}مدیریت محصولات | سیماگ{% endblock %}
+
+{% block category_section %}{% endblock %}
+{% block hero_section %}{% endblock %}
+{% block product_section %}{% endblock %}
+
+{% block content %}
+
+<style>
+    .badge-featured {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        background: #fff3e0;
+        color: #e65100;
+        font-weight: 700;
+    }
+    .badge-not-featured {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        background: #f5f5f5;
+        color: #999;
+    }
+    .badge-active {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        background: #e8f5e9;
+        color: #27ae60;
+    }
+    .badge-inactive {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        background: #fce4ec;
+        color: #e74c3c;
+    }
+</style>
+
+<div style="max-width:1350px;margin:30px auto;padding:0 16px;">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;flex-wrap:wrap;gap:12px;">
+        <div>
+            <h1 style="font-size:28px;font-weight:900;color:var(--dark);">🛍️ مدیریت محصولات</h1>
+            <p style="color:var(--gray);">{{ products.count }} محصول</p>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <a href="{% url 'accounts:admin_product_add' %}" style="padding:10px 24px;border-radius:40px;background:linear-gradient(135deg,#4caf7a,#2d8f5a);color:#fff;text-decoration:none;font-weight:600;transition:all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 30px rgba(76,175,122,0.3)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
+                ➕ افزودن محصول
+            </a>
+            <a href="{% url 'accounts:admin_dashboard' %}" style="padding:10px 24px;border-radius:40px;background:var(--primary);color:#fff;text-decoration:none;font-weight:600;transition:all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                ← بازگشت
+            </a>
+        </div>
+    </div>
+
+    <div style="background:var(--white);border-radius:24px;padding:20px;border:1px solid #ecf3ec;box-shadow:var(--shadow);overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+            <thead>
+                <tr style="border-bottom:2px solid #ecf3ec;">
+                    <th style="padding:12px 8px;text-align:right;">#</th>
+                    <th style="padding:12px 8px;text-align:right;">نام</th>
+                    <th style="padding:12px 8px;text-align:right;">دسته‌بندی</th>
+                    <th style="padding:12px 8px;text-align:right;">قیمت</th>
+                    <th style="padding:12px 8px;text-align:right;background:#fff3e0;color:#e65100;">⭐ ویژه</th>
+                    <th style="padding:12px 8px;text-align:right;">وضعیت</th>
+                    <th style="padding:12px 8px;text-align:right;">عملیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr style="border-bottom:1px solid #ecf3ec;">
+                    <td style="padding:12px 8px;font-weight:600;">{{ forloop.counter }}</td>
+                    <td style="padding:12px 8px;font-weight:700;color:var(--dark);">{{ product.name }}</td>
+                    <td style="padding:12px 8px;">{{ product.category.name }}</td>
+                    <td style="padding:12px 8px;font-weight:700;color:var(--primary-dark);">{{ product.price|floatformat:0 }}</td>
+                    <td style="padding:12px 8px;text-align:center;">
+                        {% if product.is_featured %}
+                        <span class="badge-featured">⭐ ویژه</span>
+                        {% else %}
+                        <span class="badge-not-featured">—</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding:12px 8px;">
+                        {% if product.is_active %}
+                        <span class="badge-active">✅ فعال</span>
+                        {% else %}
+                        <span class="badge-inactive">⛔ غیرفعال</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding:12px 8px;display:flex;gap:6px;flex-wrap:wrap;">
+                        <a href="{% url 'accounts:admin_product_edit' product.id %}" style="color:#2196f3;text-decoration:none;font-weight:600;padding:4px 12px;border-radius:12px;border:1px solid #2196f3;transition:all 0.3s ease;" onmouseover="this.style.background='#2196f3';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#2196f3'">✏️ ویرایش</a>
+                        <a href="{% url 'accounts:admin_product_delete' product.id %}" style="color:#e74c3c;text-decoration:none;font-weight:600;padding:4px 12px;border-radius:12px;border:1px solid #e74c3c;transition:all 0.3s ease;" onmouseover="this.style.background='#e74c3c';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#e74c3c'">🗑️ حذف</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" style="padding:40px;text-align:center;color:var(--gray);">هیچ محصولی وجود ندارد.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}

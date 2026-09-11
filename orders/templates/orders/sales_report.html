@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}گزارش فروش | سیماگ{% endblock %}
+
+{% block category_section %}{% endblock %}
+{% block hero_section %}{% endblock %}
+{% block product_section %}{% endblock %}
+
+{% block content %}
+
+<div style="max-width:1350px;margin:30px auto;padding:0 16px;">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;flex-wrap:wrap;gap:12px;">
+        <div>
+            <h1 style="font-size:28px;font-weight:900;color:var(--dark);">💰 گزارش فروش</h1>
+            <p style="color:var(--gray);">مشاهده و تحلیل فروش</p>
+        </div>
+        <a href="{% url 'orders:reports_dashboard' %}" style="padding:10px 24px;border-radius:40px;background:var(--primary);color:#fff;text-decoration:none;font-weight:600;">← بازگشت</a>
+    </div>
+
+    <!-- ===== فیلترها ===== -->
+    <div style="background:var(--white);border-radius:24px;padding:20px;border:1px solid #ecf3ec;box-shadow:var(--shadow);margin-bottom:30px;">
+        <form method="get" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;">
+            <div>
+                <label style="display:block;font-weight:600;color:var(--dark);font-size:13px;margin-bottom:4px;">از تاریخ</label>
+                <input type="date" name="date_from" value="{{ date_from }}" style="padding:8px 16px;border-radius:30px;border:1.5px solid #ecf3ec;font-family:inherit;font-size:13px;background:var(--primary-soft);color:var(--dark);outline:none;">
+            </div>
+            <div>
+                <label style="display:block;font-weight:600;color:var(--dark);font-size:13px;margin-bottom:4px;">تا تاریخ</label>
+                <input type="date" name="date_to" value="{{ date_to }}" style="padding:8px 16px;border-radius:30px;border:1.5px solid #ecf3ec;font-family:inherit;font-size:13px;background:var(--primary-soft);color:var(--dark);outline:none;">
+            </div>
+            <div>
+                <label style="display:block;font-weight:600;color:var(--dark);font-size:13px;margin-bottom:4px;">وضعیت</label>
+                <select name="status" style="padding:8px 16px;border-radius:30px;border:1.5px solid #ecf3ec;font-family:inherit;font-size:13px;background:var(--primary-soft);color:var(--dark);outline:none;appearance:none;">
+                    <option value="">همه</option>
+                    <option value="pending" {% if status == 'pending' %}selected{% endif %}>در انتظار</option>
+                    <option value="processing" {% if status == 'processing' %}selected{% endif %}>در حال پردازش</option>
+                    <option value="shipped" {% if status == 'shipped' %}selected{% endif %}>ارسال شده</option>
+                    <option value="delivered" {% if status == 'delivered' %}selected{% endif %}>تحویل داده شده</option>
+                    <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>لغو شده</option>
+                </select>
+            </div>
+            <button type="submit" style="padding:8px 24px;border-radius:30px;border:none;background:linear-gradient(135deg,#4caf7a,#2d8f5a);color:#fff;font-weight:600;font-size:13px;cursor:pointer;">🔍 فیلتر</button>
+            <a href="{% url 'orders:sales_report' %}" style="padding:8px 24px;border-radius:30px;border:1.5px solid #ecf3ec;color:var(--gray);font-weight:600;font-size:13px;text-decoration:none;">❌ حذف فیلتر</a>
+        </form>
+    </div>
+
+    <!-- ===== آمار ===== -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:30px;">
+        <div style="background:var(--white);border-radius:20px;padding:20px;border:1px solid #ecf3ec;box-shadow:var(--shadow);text-align:center;">
+            <div style="font-size:28px;font-weight:900;color:var(--primary-dark);">{{ total_orders }}</div>
+            <div style="font-size:13px;color:var(--gray);">تعداد سفارشات</div>
+        </div>
+        <div style="background:var(--white);border-radius:20px;padding:20px;border:1px solid #ecf3ec;box-shadow:var(--shadow);text-align:center;">
+            <div style="font-size:28px;font-weight:900;color:var(--primary-dark);">{{ total_revenue|floatformat:0 }}</div>
+            <div style="font-size:13px;color:var(--gray);">درآمد کل (تومان)</div>
+        </div>
+        <div style="background:var(--white);border-radius:20px;padding:20px;border:1px solid #ecf3ec;box-shadow:var(--shadow);text-align:center;">
+            <div style="font-size:28px;font-weight:900;color:var(--primary-dark);">{{ total_items }}</div>
+            <div style="font-size:13px;color:var(--gray);">تعداد محصولات فروخته شده</div>
+        </div>
+    </div>
+
+    <!-- ===== لیست سفارشات ===== -->
+    <div style="background:var(--white);border-radius:24px;padding:20px;border:1px solid #ecf3ec;box-shadow:var(--shadow);overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+            <thead>
+                <tr style="border-bottom:2px solid #ecf3ec;">
+                    <th style="padding:12px 8px;text-align:right;">#</th>
+                    <th style="padding:12px 8px;text-align:right;">شماره سفارش</th>
+                    <th style="padding:12px 8px;text-align:right;">کاربر</th>
+                    <th style="padding:12px 8px;text-align:right;">مبلغ</th>
+                    <th style="padding:12px 8px;text-align:right;">وضعیت</th>
+                    <th style="padding:12px 8px;text-align:right;">تاریخ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr style="border-bottom:1px solid #ecf3ec;">
+                    <td style="padding:12px 8px;font-weight:600;">{{ forloop.counter }}</td>
+                    <td style="padding:12px 8px;font-weight:700;color:var(--primary-dark);">#{{ order.order_number }}</td>
+                    <td style="padding:12px 8px;">{{ order.user.phone }}</td>
+                    <td style="padding:12px 8px;font-weight:700;color:var(--primary-dark);">{{ order.total_amount|floatformat:0 }}</td>
+                    <td style="padding:12px 8px;">
+                        <span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+                    </td>
+                    <td style="padding:12px 8px;font-size:12px;color:var(--gray);">{{ order.created_at|date:"Y/m/d H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" style="padding:40px;text-align:center;color:var(--gray);">هیچ سفارشی یافت نشد.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<style>
+    body.dark-mode .filter-box {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .filter-box label {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .filter-box input,
+    body.dark-mode .filter-box select {
+        background: #0f1915 !important;
+        color: #e0ede6 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .table-box {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+</style>
+
+{% endblock %}

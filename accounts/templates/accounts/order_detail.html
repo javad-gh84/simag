@@ -1,0 +1,436 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}جزئیات سفارش | سیماگ{% endblock %}
+
+{% block category_section %}{% endblock %}
+{% block hero_section %}{% endblock %}
+{% block offer_section %}{% endblock %}
+{% block product_section %}{% endblock %}
+{% block testimonial_section %}{% endblock %}
+
+{% block content %}
+
+<style>
+    .order-detail-container {
+        max-width: 1350px;
+        margin: 40px auto;
+        padding: 0 16px;
+    }
+    .order-detail-grid {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 30px;
+    }
+    .sidebar {
+        background: var(--white);
+        border-radius: 30px;
+        padding: 25px;
+        border: 1px solid #ecf3ec;
+        box-shadow: var(--shadow);
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+    }
+    .sidebar-user {
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #ecf3ec;
+    }
+    .sidebar-avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: linear-gradient(145deg, #4caf7a, #2d8f5a);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        color: #fff;
+        margin: 0 auto 10px;
+    }
+    .sidebar-name {
+        font-weight: 700;
+        color: var(--dark);
+        font-size: 16px;
+    }
+    .sidebar-phone {
+        font-size: 12px;
+        color: var(--gray);
+    }
+    .sidebar-menu {
+        margin-top: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .sidebar-menu a {
+        padding: 10px 16px;
+        border-radius: 16px;
+        color: var(--dark);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+    .sidebar-menu a:hover {
+        background: var(--primary-soft);
+    }
+    .sidebar-menu a.active {
+        background: var(--primary);
+        color: #fff;
+        font-weight: 600;
+    }
+    .sidebar-logout {
+        margin-top: 8px;
+        width: 100%;
+        padding: 10px 16px;
+        border-radius: 16px;
+        border: 1.5px solid #e74c3c;
+        background: transparent;
+        color: #e74c3c;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+    .sidebar-logout:hover {
+        background: #fee;
+    }
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .page-title {
+        font-size: 28px;
+        font-weight: 900;
+        color: var(--dark);
+    }
+    .page-sub {
+        color: var(--gray);
+    }
+    .status-badge {
+        padding: 6px 20px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 700;
+    }
+    .status-badge-pending {
+        background: #fff3e0;
+        color: #e65100;
+    }
+    .status-badge-processing {
+        background: #fff8e1;
+        color: #f57f17;
+    }
+    .status-badge-shipped {
+        background: #e3f2fd;
+        color: #0d47a1;
+    }
+    .status-badge-delivered {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+    .status-badge-cancelled {
+        background: #fce4ec;
+        color: #c62828;
+    }
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    .info-card {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 20px;
+        border: 1px solid #ecf3ec;
+        box-shadow: var(--shadow);
+    }
+    .info-label {
+        font-size: 13px;
+        color: var(--gray);
+        font-weight: 600;
+    }
+    .info-value {
+        font-weight: 700;
+        color: var(--dark);
+        font-size: 16px;
+        margin-top: 4px;
+    }
+    .info-value-price {
+        color: var(--primary-dark);
+        font-size: 20px;
+    }
+    .info-value-tracking {
+        font-size: 16px;
+    }
+    .tracking-link {
+        font-size: 12px;
+        color: var(--primary);
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 4px;
+    }
+    .products-box {
+        background: var(--white);
+        border-radius: 30px;
+        padding: 25px;
+        border: 1px solid #ecf3ec;
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+    }
+    .products-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--dark);
+        margin-bottom: 16px;
+    }
+    .product-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 12px 16px;
+        border-radius: 16px;
+        background: var(--primary-soft);
+        margin-bottom: 12px;
+    }
+    .product-img {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        background: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+    .product-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 12px;
+    }
+    .product-info {
+        flex: 1;
+    }
+    .product-name {
+        font-weight: 700;
+        color: var(--dark);
+        font-size: 14px;
+    }
+    .product-detail {
+        font-size: 12px;
+        color: var(--gray);
+    }
+    .product-price {
+        font-weight: 700;
+        color: var(--primary-dark);
+        font-size: 16px;
+    }
+    .total-row {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 2px solid #ecf3ec;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .total-label {
+        font-weight: 700;
+        color: var(--dark);
+        font-size: 16px;
+    }
+    .total-price {
+        font-weight: 900;
+        color: var(--primary-dark);
+        font-size: 24px;
+    }
+    .back-btn {
+        display: inline-block;
+        padding: 10px 30px;
+        border-radius: 40px;
+        border: 1.5px solid var(--primary);
+        color: var(--primary-dark);
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    .back-btn:hover {
+        background: var(--primary);
+        color: #fff;
+    }
+
+    body.dark-mode .sidebar {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .sidebar-name {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .sidebar-menu a {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .sidebar-menu a:hover {
+        background: rgba(76, 175, 122, 0.12) !important;
+    }
+    body.dark-mode .sidebar-menu a.active {
+        background: var(--primary) !important;
+        color: #fff !important;
+    }
+    body.dark-mode .info-card {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .info-value {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .products-box {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .products-title {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .product-item {
+        background: #0f1915 !important;
+    }
+    body.dark-mode .product-name {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .page-title {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .total-label {
+        color: #e0ede6 !important;
+    }
+
+    @media (max-width: 992px) {
+        .order-detail-grid {
+            grid-template-columns: 1fr;
+        }
+        .sidebar {
+            position: static;
+        }
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 480px) {
+        .product-item {
+            flex-wrap: wrap;
+        }
+        .product-price {
+            width: 100%;
+            text-align: right;
+        }
+    }
+</style>
+
+<div class="order-detail-container">
+
+    <div class="order-detail-grid">
+
+        <!-- ===== منوی کناری ===== -->
+        <div class="sidebar">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar">{{ user.phone|slice:":2" }}</div>
+                <div class="sidebar-name">{{ user.full_name|default:user.phone }}</div>
+                <div class="sidebar-phone">{{ user.phone }}</div>
+            </div>
+            <div class="sidebar-menu">
+                <a href="{% url 'accounts:dashboard' %}">📊 داشبورد</a>
+                <a href="{% url 'accounts:orders' %}" class="active">📋 سفارشات</a>
+                <a href="{% url 'accounts:wishlist' %}">❤️ علاقه‌مندی‌ها</a>
+                <a href="{% url 'accounts:edit_profile' %}">👤 ویرایش پروفایل</a>
+                <a href="{% url 'accounts:change_password' %}">🔒 تغییر رمز عبور</a>
+                <form method="post" action="{% url 'accounts:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="sidebar-logout">🚪 خروج</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ===== محتوای اصلی ===== -->
+        <div>
+
+            <div class="page-header">
+                <div>
+                    <div class="page-title">📋 سفارش #{{ order.id }}</div>
+                    <div class="page-sub">{{ order.created_at|date:"Y/m/d H:i" }}</div>
+                </div>
+                <div class="status-badge status-badge-{{ order.status }}">{{ order.get_status_display }}</div>
+            </div>
+
+            <!-- ===== اطلاعات سفارش ===== -->
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-label">📅 تاریخ سفارش</div>
+                    <div class="info-value">{{ order.created_at|date:"Y/m/d H:i" }}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">💰 مبلغ کل</div>
+                    <div class="info-value info-value-price">{{ order.total_price|floatformat:0 }} تومان</div>
+                </div>
+                {% if order.tracking_code %}
+                <div class="info-card">
+                    <div class="info-label">📦 کد رهگیری</div>
+                    <div class="info-value info-value-tracking">{{ order.tracking_code }}</div>
+                    <a href="#" class="tracking-link">🔍 پیگیری سفارش</a>
+                </div>
+                {% endif %}
+                {% if order.shipping_address %}
+                <div class="info-card">
+                    <div class="info-label">📍 آدرس ارسال</div>
+                    <div class="info-value">{{ order.shipping_address }}</div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- ===== محصولات سفارش ===== -->
+            <div class="products-box">
+
+                <div class="products-title">📦 محصولات سفارش</div>
+
+                {% for item in order.items.all %}
+                <div class="product-item">
+                    <div class="product-img">
+                        {% if item.product.images.first %}
+                        <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.name }}">
+                        {% else %}
+                        ☕
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">{{ item.product.name }}</div>
+                        <div class="product-detail">تعداد: {{ item.quantity }} × {{ item.product.price|floatformat:0 }} تومان</div>
+                    </div>
+                    <div class="product-price">{{ item.total_price|floatformat:0 }} تومان</div>
+                </div>
+                {% endfor %}
+
+                <div class="total-row">
+                    <span class="total-label">جمع کل</span>
+                    <span class="total-price">{{ order.total_price|floatformat:0 }} تومان</span>
+                </div>
+
+            </div>
+
+            <a href="{% url 'accounts:orders' %}" class="back-btn">← بازگشت به لیست سفارشات</a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

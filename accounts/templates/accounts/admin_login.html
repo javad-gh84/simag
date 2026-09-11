@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ورود ادمین | سیماگ{% endblock %}
+
+{% block category_section %}{% endblock %}
+{% block hero_section %}{% endblock %}
+{% block product_section %}{% endblock %}
+
+{% block content %}
+
+<div style="max-width:450px;margin:60px auto;padding:40px;background:var(--white);border-radius:38px;border:1px solid #ecf3ec;box-shadow:var(--shadow);">
+
+    <div style="text-align:center;margin-bottom:30px;">
+        <div style="font-size:48px;margin-bottom:8px;">🔐</div>
+        <h1 style="font-size:24px;font-weight:900;color:var(--dark);">ورود به پنل مدیریت</h1>
+        <p style="color:var(--gray);font-size:14px;">فقط ادمین‌ها دسترسی دارند</p>
+    </div>
+
+    {% if messages %}
+        {% for msg in messages %}
+        <div style="background:#fee;border-radius:20px;padding:12px 20px;margin-bottom:20px;border-right:4px solid #e74c3c;">
+            <p style="color:#e74c3c;font-size:14px;margin:0;">⚠️ {{ msg }}</p>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" action="{% url 'accounts:admin_login' %}">
+        {% csrf_token %}
+
+        <div style="margin-bottom:16px;">
+            <label for="phone" style="display:block;font-weight:600;color:var(--dark);margin-bottom:6px;">📱 شماره موبایل</label>
+            <input type="text" name="phone" id="phone" placeholder="مثال: 09123456789" required style="width:100%;padding:14px 20px;border-radius:30px;border:1.5px solid #ecf3ec;font-family:inherit;font-size:16px;background:var(--primary-soft);color:var(--dark);outline:none;">
+        </div>
+
+        <div style="margin-bottom:20px;">
+            <label for="password" style="display:block;font-weight:600;color:var(--dark);margin-bottom:6px;">🔒 رمز عبور</label>
+            <input type="password" name="password" id="password" placeholder="رمز عبور خود را وارد کنید" required style="width:100%;padding:14px 20px;border-radius:30px;border:1.5px solid #ecf3ec;font-family:inherit;font-size:16px;background:var(--primary-soft);color:var(--dark);outline:none;">
+        </div>
+
+        <button type="submit" style="width:100%;padding:16px;border-radius:60px;border:none;background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff;font-weight:700;font-size:18px;cursor:pointer;transition:all 0.3s ease;box-shadow:0 8px 30px rgba(231,76,60,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+            🚀 ورود به مدیریت
+        </button>
+    </form>
+
+    <div style="text-align:center;margin-top:16px;">
+        <a href="{% url 'products:home' %}" style="color:var(--gray);font-size:14px;text-decoration:none;">← بازگشت به سایت</a>
+    </div>
+
+</div>
+
+<style>
+    body.dark-mode .login-box {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .login-box h1 {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .login-box input {
+        background: #0f1915 !important;
+        color: #e0ede6 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .login-box label {
+        color: #e0ede6 !important;
+    }
+</style>
+
+{% endblock %}

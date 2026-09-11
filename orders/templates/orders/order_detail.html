@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head><title>جزئیات سفارش</title></head>
+<body>
+    <h1>سفارش {{ order.order_number }}</h1>
+    <p>وضعیت: {{ order.get_status_display }}</p>
+    <p>مبلغ کل: {{ order.final_amount }} تومان</p>
+    <p>آدرس: {{ order.address }}</p>
+    <p>روش ارسال: {{ order.get_shipping_method_display }}</p>
+    <p>تاریخ: {{ order.created_at }}</p>
+    <h3>محصولات:</h3>
+    {% for item in order.items.all %}
+        <p>{{ item.variant.product.name }} - {{ item.variant.color }} - تعداد: {{ item.quantity }} - قیمت: {{ item.price }}</p>
+    {% endfor %}
+    <a href="{% url 'products:home' %}">بازگشت به صفحه اصلی</a>
+</body>
+</html>

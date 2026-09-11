@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}محصولات | سیماگ{% endblock %}
+
+{% block category_section %}{% endblock %}
+{% block hero_section %}{% endblock %}
+{% block offer_section %}{% endblock %}
+{% block product_section %}{% endblock %}
+{% block testimonial_section %}{% endblock %}
+{% block title %}محصولات | سیماگ{% endblock %}
+{% block meta_description %}لیست کامل محصولات سیماگ شامل ماگ، فلاسک، قمقمه و ظروف با بهترین کیفیت.{% endblock %}
+{% block content %}
+
+<style>
+    .product-card-wrapper {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+    .product-card {
+        background: var(--white);
+        border-radius: 38px;
+        padding: 28px 18px 24px;
+        border: 1px solid #ecf3ec;
+        text-align: center;
+        transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .product-card:hover {
+        transform: translateY(-18px);
+        border-color: var(--primary);
+        box-shadow: 0 24px 60px rgba(76, 175, 122, 0.18);
+    }
+    .product-card:hover .preview-text {
+        bottom: 0;
+        opacity: 1;
+    }
+    .product-card .preview-text {
+        position: absolute;
+        bottom: -60px;
+        left: 0;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        padding: 12px;
+        border-radius: 0 0 38px 38px;
+        transition: all 0.4s ease;
+        opacity: 0;
+        font-size: 13px;
+        color: var(--gray);
+        z-index: 2;
+    }
+    .product-card .product-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 24px;
+        margin-bottom: 12px;
+        background: #eaf5ef;
+        transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .product-card:hover .product-image {
+        transform: scale(1.03);
+    }
+    .btn-add-to-cart {
+        background: linear-gradient(145deg, #4caf7a, #2d8f5a);
+        color: #fff;
+        border: none;
+        padding: 8px 34px;
+        border-radius: 40px;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        display: inline-block;
+        font-family: inherit;
+        text-decoration: none;
+        box-shadow: 0 4px 14px rgba(76, 175, 122, 0.2);
+        margin-top: auto;
+        z-index: 3;
+        position: relative;
+        border: none;
+    }
+    .btn-add-to-cart:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(76, 175, 122, 0.3);
+    }
+    .btn-add-to-cart:active {
+        transform: scale(0.95);
+    }
+
+    .filter-btn {
+        padding: 8px 24px;
+        border-radius: 40px;
+        background: var(--primary-soft);
+        color: var(--primary-dark);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    .filter-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(76, 175, 122, 0.15);
+        border-color: var(--primary);
+    }
+    .filter-btn.active {
+        background: var(--primary) !important;
+        color: #fff !important;
+        border-color: var(--primary);
+    }
+
+    body.dark-mode .product-card {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .product-card h4 {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .product-card .preview-text {
+        background: rgba(26, 40, 34, 0.95) !important;
+    }
+    body.dark-mode .filter-btn {
+        background: #1b2a24 !important;
+        color: #c8e6d9 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .filter-btn.active {
+        background: var(--primary) !important;
+        color: #fff !important;
+        border-color: var(--primary) !important;
+    }
+
+    @media (max-width: 768px) {
+        .product-grid {
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)) !important;
+            gap: 16px !important;
+        }
+        .product-card {
+            padding: 16px 12px !important;
+        }
+        .product-card .product-image {
+            height: 150px !important;
+        }
+        .btn-add-to-cart {
+            padding: 6px 20px !important;
+            font-size: 12px !important;
+        }
+        .filter-btn {
+            padding: 6px 16px !important;
+            font-size: 12px !important;
+        }
+    }
+    @media (max-width: 480px) {
+        .product-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+        }
+        .product-card .product-image {
+            height: 120px !important;
+        }
+        .product-card h4 {
+            font-size: 14px !important;
+        }
+        .product-card .price {
+            font-size: 16px !important;
+        }
+    }
+</style>
+
+<div style="max-width:1350px;margin:40px auto;padding:0 16px;">
+
+    <!-- ===== فیلتر دسته‌بندی ===== -->
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:30px;padding:20px 0;border-bottom:2px solid var(--primary-light);">
+        <a href="{% url 'products:product_list' %}" class="filter-btn {% if not category %}active{% endif %}">
+            همه
+        </a>
+        {% for cat in categories %}
+        <a href="{% url 'products:product_list' %}?category={{ cat.slug }}" class="filter-btn {% if category and category.slug == cat.slug %}active{% endif %}">
+            {{ cat.name }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- ===== نتیجه جستجو ===== -->
+    {% if search_query %}
+    <div style="margin-bottom:20px;font-size:16px;color:var(--gray);">
+        🔍 نتیجه جستجو برای: <strong style="color:var(--dark);">"{{ search_query }}"</strong>
+    </div>
+    {% endif %}
+
+    <!-- ===== تعداد محصولات ===== -->
+    <div style="margin-bottom:20px;font-size:14px;color:var(--gray);">
+        {{ products|length }} محصول
+    </div>
+
+    <!-- ===== محصولات ===== -->
+    {% if products %}
+    <div class="product-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:30px;">
+        {% for product in products %}
+        <a href="{% url 'products:product_detail' product.slug %}" class="product-card-wrapper">
+            <div class="product-card">
+
+                <!-- ===== عکس ===== -->
+                {% if product.images.first %}
+                <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="product-image">
+                {% else %}
+                <div style="width:100%;height:200px;border-radius:24px;background:#eaf5ef;display:flex;align-items:center;justify-content:center;font-size:52px;margin-bottom:12px;">
+                    ☕
+                </div>
+                {% endif %}
+
+                <!-- ===== نام ===== -->
+                <h4 style="font-weight:700;font-size:17px;color:var(--dark);margin-top:8px;">
+                    {{ product.name }}
+                </h4>
+
+                <!-- ===== برند ===== -->
+                {% if product.brand %}
+                <div style="font-size:12px;color:var(--gray);margin-bottom:4px;">{{ product.brand }}</div>
+                {% endif %}
+
+                <!-- ===== قیمت ===== -->
+                <div style="color:var(--primary-dark);font-weight:700;font-size:20px;margin:6px 0 14px;">
+                    {{ product.price|floatformat:0 }} تومان
+                </div>
+
+                <!-- ===== دکمه افزودن به سبد خرید (لینک جدا) ===== -->
+                <a href="{% url 'cart:add_to_cart' product.id %}" class="btn-add-to-cart" onclick="event.stopPropagation();">
+                    🛒 افزودن به سبد خرید
+                </a>
+
+                <!-- ===== پروموشن ===== -->
+                <div class="preview-text">
+                    {{ product.description|truncatewords:10 }}
+                </div>
+
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- ===== محصولی یافت نشد ===== -->
+    <div style="text-align:center;padding:60px 20px;background:var(--white);border-radius:38px;border:1px solid #ecf3ec;">
+        <span style="font-size:64px;display:block;margin-bottom:16px;">🔍</span>
+        <h3 style="color:var(--dark);font-size:24px;font-weight:700;">محصولی یافت نشد</h3>
+        <p style="color:var(--gray);margin-top:8px;">متاسفیم! محصولی با این مشخصات پیدا نشد.</p>
+        <a href="{% url 'products:product_list' %}" style="margin-top:20px;display:inline-block;background:linear-gradient(135deg,#4caf7a 0%,#2d8f5a 50%,#1f6e43 100%);color:#fff;padding:14px 40px;border-radius:60px;font-weight:700;text-decoration:none;box-shadow:0 8px 30px rgba(76,175,122,0.3);">
+            بازگشت به همه محصولات
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

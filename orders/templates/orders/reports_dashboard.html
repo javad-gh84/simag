@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}داشبورد گزارشات | سیماگ{% endblock %}
+
+{% block category_section %}{% endblock %}
+{% block hero_section %}{% endblock %}
+{% block product_section %}{% endblock %}
+
+{% block content %}
+
+<style>
+    .stat-card {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 20px;
+        border: 1px solid #ecf3ec;
+        box-shadow: var(--shadow);
+        text-align: center;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .stat-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+    }
+    .stat-number {
+        font-size: 32px;
+        font-weight: 900;
+        color: var(--primary-dark);
+    }
+    .stat-label {
+        font-size: 13px;
+        color: var(--gray);
+        font-weight: 500;
+    }
+    .report-card {
+        background: var(--white);
+        border-radius: 24px;
+        padding: 24px;
+        border: 1px solid #ecf3ec;
+        box-shadow: var(--shadow);
+        margin-bottom: 24px;
+    }
+    .status-badge {
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-block;
+    }
+    .status-pending { background: #fff3e0; color: #f39c12; }
+    .status-processing { background: #e3f2fd; color: #2196f3; }
+    .status-shipped { background: #e8f5e9; color: #4caf50; }
+    .status-delivered { background: #e8f5e9; color: #27ae60; }
+    .status-cancelled { background: #fce4ec; color: #e74c3c; }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+    }
+    @media (max-width: 480px) {
+        .stats-grid {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+
+<div style="max-width:1350px;margin:30px auto;padding:0 16px;">
+
+    <!-- ===== هدر ===== -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;flex-wrap:wrap;gap:12px;">
+        <div>
+            <h1 style="font-size:28px;font-weight:900;color:var(--dark);">📊 داشبورد گزارشات</h1>
+            <p style="color:var(--gray);">خلاصه آماری فروشگاه سیماگ</p>
+        </div>
+        <a href="{% url 'orders:export_excel' %}" style="padding:10px 24px;border-radius:40px;background:linear-gradient(135deg,#4caf7a,#2d8f5a);color:#fff;text-decoration:none;font-weight:600;transition:all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 30px rgba(76,175,122,0.3)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
+            📥 خروجی اکسل
+        </a>
+    </div>
+
+    <!-- ===== کارت‌های آمار ===== -->
+    <div class="stats-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:30px;">
+
+        <div class="stat-card">
+            <div class="stat-number">{{ total_orders }}</div>
+            <div class="stat-label">📦 کل سفارشات</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number">{{ total_revenue|floatformat:0 }}</div>
+            <div class="stat-label">💰 درآمد کل</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number">{{ total_users }}</div>
+            <div class="stat-label">👥 کاربران</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number">{{ total_products }}</div>
+            <div class="stat-label">🛍️ محصولات</div>
+        </div>
+
+    </div>
+
+    <!-- ===== فروش امروز / هفته / ماه ===== -->
+    <div class="stats-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:30px;">
+
+        <div class="stat-card">
+            <div style="font-size:13px;color:var(--gray);font-weight:500;">📅 امروز</div>
+            <div class="stat-number" style="font-size:24px;">{{ today_orders }} سفارش</div>
+            <div style="font-weight:700;color:var(--primary-dark);">{{ today_revenue|floatformat:0 }} تومان</div>
+        </div>
+
+        <div class="stat-card">
+            <div style="font-size:13px;color:var(--gray);font-weight:500;">📆 هفته اخیر</div>
+            <div class="stat-number" style="font-size:24px;">{{ week_orders }} سفارش</div>
+            <div style="font-weight:700;color:var(--primary-dark);">{{ week_revenue|floatformat:0 }} تومان</div>
+        </div>
+
+        <div class="stat-card">
+            <div style="font-size:13px;color:var(--gray);font-weight:500;">📆 ماه اخیر</div>
+            <div class="stat-number" style="font-size:24px;">{{ month_orders }} سفارش</div>
+            <div style="font-weight:700;color:var(--primary-dark);">{{ month_revenue|floatformat:0 }} تومان</div>
+        </div>
+
+    </div>
+
+    <!-- ===== وضعیت سفارشات ===== -->
+    <div class="report-card">
+        <h3 style="font-size:16px;font-weight:800;color:var(--dark);margin-bottom:16px;">📋 وضعیت سفارشات</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;">
+            <div style="display:flex;justify-content:space-between;padding:10px 16px;background:var(--primary-soft);border-radius:12px;">
+                <span>🟡 در انتظار</span>
+                <span style="font-weight:700;">{{ status_counts.pending }}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 16px;background:var(--primary-soft);border-radius:12px;">
+                <span>🔵 در حال پردازش</span>
+                <span style="font-weight:700;">{{ status_counts.processing }}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 16px;background:var(--primary-soft);border-radius:12px;">
+                <span>🟢 ارسال شده</span>
+                <span style="font-weight:700;">{{ status_counts.shipped }}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 16px;background:var(--primary-soft);border-radius:12px;">
+                <span>✅ تحویل داده شده</span>
+                <span style="font-weight:700;">{{ status_counts.delivered }}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 16px;background:var(--primary-soft);border-radius:12px;">
+                <span>🔴 لغو شده</span>
+                <span style="font-weight:700;">{{ status_counts.cancelled }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== فروش ماهانه ===== -->
+    <div class="report-card">
+        <h3 style="font-size:16px;font-weight:800;color:var(--dark);margin-bottom:16px;">📈 فروش ماهانه (۱۲ ماه اخیر)</h3>
+        <div style="display:flex;align-items:flex-end;height:200px;gap:8px;padding:12px 0;">
+            {% for item in monthly_sales %}
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;">
+                <div style="width:100%;background:linear-gradient(180deg,#4caf7a,#2d8f5a);border-radius:6px 6px 0 0;min-height:4px;height:{% widthratio item.revenue total_revenue 100 %}%;max-height:170px;transition:all 0.8s cubic-bezier(0.34,1.56,0.64,1);position:relative;cursor:pointer;" onmouseover="this.style.transform='scaleY(1.05)';this.style.transformOrigin='bottom'" onmouseout="this.style.transform='scaleY(1)'">
+                    <div style="position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:2px 8px;border-radius:8px;font-size:9px;white-space:nowrap;opacity:0;transition:opacity 0.3s ease;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
+                        {{ item.revenue|floatformat:0 }}
+                    </div>
+                </div>
+                <span style="font-size:9px;color:var(--gray);font-weight:600;">{{ item.month }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray);padding-top:12px;border-top:1px solid #ecf3ec;">
+            <span>💵 مجموع: {{ total_revenue|floatformat:0 }} تومان</span>
+            <span>📊 {{ monthly_sales|length }} ماه</span>
+        </div>
+    </div>
+
+    <!-- ===== پرفروش‌ترین محصولات ===== -->
+    <div class="report-card">
+        <h3 style="font-size:16px;font-weight:800;color:var(--dark);margin-bottom:16px;">🏆 پرفروش‌ترین محصولات</h3>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+            {% for product in top_products %}
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--primary-soft);border-radius:12px;flex-wrap:wrap;gap:8px;">
+                <div style="font-weight:600;color:var(--dark);">{{ product.name }}</div>
+                <div style="display:flex;gap:16px;flex-wrap:wrap;">
+                    <span style="font-weight:700;color:var(--primary-dark);">{{ product.total_sold|default:0 }} عدد</span>
+                    <span style="color:var(--gray);font-size:13px;">{{ product.price|floatformat:0 }} تومان</span>
+                </div>
+            </div>
+            {% empty %}
+            <p style="color:var(--gray);text-align:center;padding:20px 0;">هیچ محصولی فروخته نشده است.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ===== لینک‌های سریع ===== -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;">
+
+        <a href="{% url 'orders:sales_report' %}" style="padding:14px;border-radius:16px;background:linear-gradient(135deg,#e3f2fd,#bbdefb);color:#0d47a1;text-decoration:none;text-align:center;font-weight:600;transition:all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 30px rgba(33,150,243,0.15)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
+            💰 گزارش فروش
+        </a>
+
+        <a href="{% url 'orders:product_report' %}" style="padding:14px;border-radius:16px;background:linear-gradient(135deg,#fce4ec,#f8bbd0);color:#880e4f;text-decoration:none;text-align:center;font-weight:600;transition:all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 30px rgba(233,30,99,0.15)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
+            🛍️ گزارش محصولات
+        </a>
+
+        <a href="{% url 'orders:user_report' %}" style="padding:14px;border-radius:16px;background:linear-gradient(135deg,#fff3e0,#ffcc80);color:#bf360c;text-decoration:none;text-align:center;font-weight:600;transition:all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 30px rgba(255,152,0,0.15)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
+            👥 گزارش کاربران
+        </a>
+
+        <a href="{% url 'orders:export_excel' %}" style="padding:14px;border-radius:16px;background:linear-gradient(135deg,#e8f5e9,#c8e6d9);color:#1f6e43;text-decoration:none;text-align:center;font-weight:600;transition:all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 30px rgba(76,175,122,0.15)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
+            📥 خروجی اکسل
+        </a>
+
+    </div>
+
+</div>
+
+<style>
+    body.dark-mode .stat-card {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .stat-number {
+        color: #c8e6d9 !important;
+    }
+    body.dark-mode .report-card {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .report-card h3 {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .report-card .stat-item {
+        background: #0f1915 !important;
+    }
+</style>
+
+{% endblock %}

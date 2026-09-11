@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}صفحه یافت نشد | سیماگ{% endblock %}
+
+{% block category_section %}{% endblock %}
+{% block hero_section %}{% endblock %}
+{% block offer_section %}{% endblock %}
+{% block product_section %}{% endblock %}
+{% block testimonial_section %}{% endblock %}
+
+{% block content %}
+
+<div style="max-width:600px;margin:80px auto;padding:0 16px;text-align:center;">
+
+    <!-- ===== تصویر ۴۰۴ ===== -->
+    <div style="font-size:120px;display:block;margin-bottom:20px;animation:float-magic 4s ease-in-out infinite;">
+        🔍
+    </div>
+
+    <!-- ===== عنوان ===== -->
+    <h1 style="font-size:80px;font-weight:900;color:var(--primary);line-height:1;margin-bottom:10px;">
+        ۴۰۴
+    </h1>
+    <h2 style="font-size:28px;font-weight:800;color:var(--dark);margin-bottom:12px;">
+        صفحه‌ای که دنبالش هستید پیدا نشد!
+    </h2>
+
+    <!-- ===== توضیحات ===== -->
+    <p style="color:var(--gray);font-size:16px;max-width:400px;margin:0 auto 30px;line-height:1.8;">
+        متاسفیم! صفحه‌ای که به دنبال آن هستید حذف شده، نام آن تغییر کرده یا به طور موقت در دسترس نیست.
+    </p>
+
+    <!-- ===== دکمه‌ها ===== -->
+    <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;">
+
+        <a href="{% url 'products:home' %}" 
+           style="padding:14px 40px;border-radius:60px;border:none;background:linear-gradient(135deg,#4caf7a 0%,#2d8f5a 50%,#1f6e43 100%);color:#fff;font-weight:700;font-size:16px;text-decoration:none;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 8px 30px rgba(76,175,122,0.3);"
+           onmouseover="this.style.transform='translateY(-4px) scale(1.03)'" 
+           onmouseout="this.style.transform='translateY(0) scale(1)'">
+            🏠 بازگشت به خانه
+        </a>
+
+        <a href="{% url 'products:product_list' %}" 
+           style="padding:14px 40px;border-radius:60px;border:1.5px solid var(--primary);color:var(--primary-dark);font-weight:700;font-size:16px;text-decoration:none;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);background:transparent;"
+           onmouseover="this.style.background='var(--primary)';this.style.color='#fff'" 
+           onmouseout="this.style.background='transparent';this.style.color='var(--primary-dark)'">
+            🛒 مشاهده محصولات
+        </a>
+
+    </div>
+
+    <!-- ===== محصولات پیشنهادی ===== -->
+    <div style="margin-top:50px;padding-top:40px;border-top:1px solid #ecf3ec;">
+        <h3 style="font-size:16px;font-weight:700;color:var(--dark);margin-bottom:16px;">
+            🔥 شاید این محصولات را دوست داشته باشید
+        </h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;">
+            {% for product in suggested_products|slice:":4" %}
+            <a href="{% url 'products:product_detail' product.slug %}" 
+               style="background:var(--white);border-radius:24px;padding:16px;text-align:center;text-decoration:none;border:1px solid #ecf3ec;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);box-shadow:var(--shadow);"
+               onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 20px 60px rgba(0,0,0,0.08)'" 
+               onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='var(--shadow)'">
+                <span style="font-size:32px;display:block;margin-bottom:4px;">☕</span>
+                <h4 style="font-size:13px;font-weight:700;color:var(--dark);">{{ product.name|truncatechars:15 }}</h4>
+                <div style="color:var(--primary-dark);font-weight:700;font-size:14px;margin-top:4px;">
+                    {{ product.price|floatformat:0 }} تومان
+                </div>
+            </a>
+            {% empty %}
+            <p style="color:var(--gray);font-size:14px;">محصولی برای پیشنهاد وجود ندارد.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<style>
+    @keyframes float-magic {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    body.dark-mode .error-box {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .error-box h2 {
+        color: #e0ede6 !important;
+    }
+</style>
+
+{% endblock %}

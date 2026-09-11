@@ -1,0 +1,492 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}داشبورد | سیماگ{% endblock %}
+
+{% block category_section %}{% endblock %}
+{% block hero_section %}{% endblock %}
+{% block offer_section %}{% endblock %}
+{% block product_section %}{% endblock %}
+{% block testimonial_section %}{% endblock %}
+
+{% block content %}
+
+<style>
+    .dashboard-container {
+        max-width: 1350px;
+        margin: 40px auto;
+        padding: 0 16px;
+    }
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 30px;
+    }
+    .sidebar {
+        background: var(--white);
+        border-radius: 30px;
+        padding: 25px;
+        border: 1px solid #ecf3ec;
+        box-shadow: var(--shadow);
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+    }
+    .sidebar-user {
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #ecf3ec;
+    }
+    .sidebar-avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: linear-gradient(145deg, #4caf7a, #2d8f5a);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        color: #fff;
+        margin: 0 auto 10px;
+    }
+    .sidebar-name {
+        font-weight: 700;
+        color: var(--dark);
+        font-size: 16px;
+    }
+    .sidebar-phone {
+        font-size: 12px;
+        color: var(--gray);
+    }
+    .sidebar-badge {
+        display: inline-block;
+        padding: 2px 14px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .sidebar-badge-verified {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+    .sidebar-badge-unverified {
+        background: #fff3e0;
+        color: #e65100;
+    }
+    .sidebar-menu {
+        margin-top: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .sidebar-menu a {
+        padding: 10px 16px;
+        border-radius: 16px;
+        color: var(--dark);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+    .sidebar-menu a:hover {
+        background: var(--primary-soft);
+    }
+    .sidebar-menu a.active {
+        background: var(--primary);
+        color: #fff;
+        font-weight: 600;
+    }
+    .sidebar-logout {
+        margin-top: 8px;
+        width: 100%;
+        padding: 10px 16px;
+        border-radius: 16px;
+        border: 1.5px solid #e74c3c;
+        background: transparent;
+        color: #e74c3c;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+    .sidebar-logout:hover {
+        background: #fee;
+    }
+    .main-content {
+        flex: 1;
+    }
+    .welcome-title {
+        font-size: 28px;
+        font-weight: 900;
+        color: var(--dark);
+        margin-bottom: 4px;
+    }
+    .welcome-sub {
+        color: var(--gray);
+        margin-bottom: 30px;
+    }
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 30px;
+    }
+    .stat-card {
+        background: var(--white);
+        border-radius: 24px;
+        padding: 20px;
+        border: 1px solid #ecf3ec;
+        box-shadow: var(--shadow);
+        text-align: center;
+    }
+    .stat-number {
+        font-size: 32px;
+        font-weight: 900;
+        color: var(--primary-dark);
+    }
+    .stat-label {
+        font-size: 13px;
+        color: var(--gray);
+        font-weight: 500;
+    }
+    .stat-number-warning {
+        color: #f5b342;
+    }
+    .recent-orders {
+        background: var(--white);
+        border-radius: 30px;
+        padding: 25px;
+        border: 1px solid #ecf3ec;
+        box-shadow: var(--shadow);
+        margin-bottom: 30px;
+    }
+    .recent-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+    }
+    .recent-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--dark);
+    }
+    .recent-link {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--primary);
+        text-decoration: none;
+    }
+    .order-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: var(--primary-soft);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        margin-bottom: 10px;
+    }
+    .order-item:hover {
+        background: var(--primary-light);
+    }
+    .order-info {
+        flex: 1;
+    }
+    .order-id {
+        font-weight: 700;
+        color: var(--dark);
+        font-size: 14px;
+    }
+    .order-date {
+        font-size: 12px;
+        color: var(--gray);
+    }
+    .order-price {
+        font-weight: 700;
+        color: var(--primary-dark);
+        font-size: 16px;
+    }
+    .order-status {
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .order-status-pending {
+        background: #fff3e0;
+        color: #e65100;
+    }
+    .order-status-processing {
+        background: #fff8e1;
+        color: #f57f17;
+    }
+    .order-status-shipped {
+        background: #e3f2fd;
+        color: #0d47a1;
+    }
+    .order-status-delivered {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+    .order-status-cancelled {
+        background: #fce4ec;
+        color: #c62828;
+    }
+    .suggested-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 16px;
+    }
+    .suggested-card {
+        background: var(--white);
+        border-radius: 24px;
+        padding: 16px;
+        text-align: center;
+        border: 1px solid #ecf3ec;
+        box-shadow: var(--shadow);
+        text-decoration: none;
+        transition: all 0.4s ease;
+    }
+    .suggested-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+    }
+    .suggested-icon {
+        font-size: 32px;
+        display: block;
+        margin-bottom: 4px;
+    }
+    .suggested-name {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--dark);
+    }
+    .suggested-price {
+        color: var(--primary-dark);
+        font-weight: 700;
+        font-size: 14px;
+        margin-top: 4px;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: var(--white);
+        border-radius: 30px;
+        border: 1px solid #ecf3ec;
+        box-shadow: var(--shadow);
+    }
+    .empty-icon {
+        font-size: 64px;
+        margin-bottom: 16px;
+    }
+    .empty-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--dark);
+    }
+    .empty-desc {
+        color: var(--gray);
+        margin-top: 8px;
+    }
+    .btn-primary-custom {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 12px 40px;
+        border-radius: 60px;
+        border: none;
+        background: linear-gradient(135deg, #4caf7a 0%, #2d8f5a 50%, #1f6e43 100%);
+        color: #fff;
+        font-weight: 700;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(76, 175, 122, 0.3);
+    }
+
+    body.dark-mode .sidebar {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .sidebar-name {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .sidebar-menu a {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .sidebar-menu a:hover {
+        background: rgba(76, 175, 122, 0.12) !important;
+    }
+    body.dark-mode .sidebar-menu a.active {
+        background: var(--primary) !important;
+        color: #fff !important;
+    }
+    body.dark-mode .stat-card {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .stat-number {
+        color: #c8e6d9 !important;
+    }
+    body.dark-mode .recent-orders {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .recent-title {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .order-item {
+        background: #0f1915 !important;
+    }
+    body.dark-mode .order-item:hover {
+        background: #1a3028 !important;
+    }
+    body.dark-mode .order-id {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .suggested-card {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .suggested-name {
+        color: #e0ede6 !important;
+    }
+    body.dark-mode .empty-state {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+    body.dark-mode .empty-title {
+        color: #e0ede6 !important;
+    }
+
+    @media (max-width: 992px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+        .sidebar {
+            position: static;
+        }
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    @media (max-width: 480px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        .order-item {
+            flex-wrap: wrap;
+        }
+    }
+</style>
+
+<div class="dashboard-container">
+
+    <div class="dashboard-grid">
+
+        <!-- ===== منوی کناری ===== -->
+        <div class="sidebar">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar">{{ user.phone|slice:":2" }}</div>
+                <div class="sidebar-name">{{ user.full_name|default:user.phone }}</div>
+                <div class="sidebar-phone">{{ user.phone }}</div>
+                <span class="sidebar-badge {% if user.is_verified %}sidebar-badge-verified{% else %}sidebar-badge-unverified{% endif %}">
+                    {% if user.is_verified %}✅ تایید شده{% else %}⏳ تایید نشده{% endif %}
+                </span>
+            </div>
+
+            <div class="sidebar-menu">
+                <a href="{% url 'accounts:dashboard' %}" class="active">📊 داشبورد</a>
+                <a href="{% url 'accounts:orders' %}">📋 سفارشات</a>
+                <a href="{% url 'accounts:wishlist' %}">❤️ علاقه‌مندی‌ها</a>
+                <a href="{% url 'accounts:edit_profile' %}">👤 ویرایش پروفایل</a>
+                <a href="{% url 'accounts:change_password' %}">🔒 تغییر رمز عبور</a>
+                <form method="post" action="{% url 'accounts:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="sidebar-logout">🚪 خروج</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ===== محتوای اصلی ===== -->
+        <div class="main-content">
+
+            <div class="welcome-title">👋 خوش آمدی، {{ user.full_name|default:user.phone }}!</div>
+            <div class="welcome-sub">به پنل کاربری خود خوش آمدید.</div>
+
+            <!-- ===== آمار ===== -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_orders }}</div>
+                    <div class="stat-label">تعداد سفارشات</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_spent|floatformat:0 }}</div>
+                    <div class="stat-label">مجموع خرید (تومان)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number {% if pending_orders > 0 %}stat-number-warning{% endif %}">{{ pending_orders }}</div>
+                    <div class="stat-label">سفارشات در انتظار</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ wishlist_count }}</div>
+                    <div class="stat-label">علاقه‌مندی‌ها</div>
+                </div>
+            </div>
+
+            <!-- ===== آخرین سفارشات ===== -->
+            <div class="recent-orders">
+                <div class="recent-header">
+                    <div class="recent-title">📋 آخرین سفارشات</div>
+                    <a href="{% url 'accounts:orders' %}" class="recent-link">مشاهده همه</a>
+                </div>
+
+                {% if recent_orders %}
+                    {% for order in recent_orders %}
+                    <a href="{% url 'accounts:order_detail' order.id %}" class="order-item">
+                        <div class="order-info">
+                            <div class="order-id">سفارش #{{ order.id }}</div>
+                            <div class="order-date">{{ order.created_at|date:"Y/m/d H:i" }}</div>
+                        </div>
+                        <div class="order-price">{{ order.total_amount|floatformat:0 }} تومان</div>
+                        <div class="order-status order-status-{{ order.status }}">{{ order.get_status_display }}</div>
+                    </a>
+                    {% endfor %}
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">📦</div>
+                    <div class="empty-title">هنوز سفارشی ثبت نکرده‌اید</div>
+                    <div class="empty-desc">اولین خرید خود را از فروشگاه سیماگ شروع کنید!</div>
+                    <a href="{% url 'products:product_list' %}" class="btn-primary-custom">🛒 شروع خرید</a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- ===== محصولات پیشنهادی ===== -->
+            <div>
+                <div style="font-size:18px;font-weight:800;color:var(--dark);margin-bottom:16px;">🔥 محصولات پیشنهادی</div>
+                <div class="suggested-grid">
+                    {% for product in suggested_products %}
+                    <a href="{% url 'products:product_detail' product.slug %}" class="suggested-card">
+                        <span class="suggested-icon">☕</span>
+                        <div class="suggested-name">{{ product.name|truncatechars:15 }}</div>
+                        <div class="suggested-price">{{ product.price|floatformat:0 }} تومان</div>
+                    </a>
+                    {% empty %}
+                    <div style="color:var(--gray);">محصولی برای پیشنهاد وجود ندارد.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

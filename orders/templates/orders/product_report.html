@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}گزارش محصولات | سیماگ{% endblock %}
+
+{% block category_section %}{% endblock %}
+{% block hero_section %}{% endblock %}
+{% block product_section %}{% endblock %}
+
+{% block content %}
+
+<div style="max-width:1350px;margin:30px auto;padding:0 16px;">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;flex-wrap:wrap;gap:12px;">
+        <div>
+            <h1 style="font-size:28px;font-weight:900;color:var(--dark);">🛍️ گزارش محصولات</h1>
+            <p style="color:var(--gray);">محصولات پرفروش و آمار فروش</p>
+        </div>
+        <a href="{% url 'orders:reports_dashboard' %}" style="padding:10px 24px;border-radius:40px;background:var(--primary);color:#fff;text-decoration:none;font-weight:600;">← بازگشت</a>
+    </div>
+
+    <div style="background:var(--white);border-radius:24px;padding:20px;border:1px solid #ecf3ec;box-shadow:var(--shadow);overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+            <thead>
+                <tr style="border-bottom:2px solid #ecf3ec;">
+                    <th style="padding:12px 8px;text-align:right;">#</th>
+                    <th style="padding:12px 8px;text-align:right;">نام محصول</th>
+                    <th style="padding:12px 8px;text-align:right;">دسته‌بندی</th>
+                    <th style="padding:12px 8px;text-align:right;">قیمت</th>
+                    <th style="padding:12px 8px;text-align:right;">تعداد فروش</th>
+                    <th style="padding:12px 8px;text-align:right;">درآمد</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr style="border-bottom:1px solid #ecf3ec;">
+                    <td style="padding:12px 8px;font-weight:600;">{{ forloop.counter }}</td>
+                    <td style="padding:12px 8px;font-weight:700;color:var(--dark);">{{ product.name }}</td>
+                    <td style="padding:12px 8px;">{{ product.category.name }}</td>
+                    <td style="padding:12px 8px;font-weight:700;color:var(--primary-dark);">{{ product.price|floatformat:0 }}</td>
+                    <td style="padding:12px 8px;font-weight:700;color:#2196f3;">{{ product.total_sold|default:0 }}</td>
+                    <td style="padding:12px 8px;font-weight:700;color:var(--primary-dark);">{{ product.total_revenue|default:0|floatformat:0 }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" style="padding:40px;text-align:center;color:var(--gray);">هیچ محصولی فروخته نشده است.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<style>
+    body.dark-mode .table-box {
+        background: #1b2a24 !important;
+        border-color: #2a4036 !important;
+    }
+</style>
+
+{% endblock %}

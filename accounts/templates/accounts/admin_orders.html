@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}مدیریت سفارشات | سیماگ{% endblock %}
+
+{% block category_section %}{% endblock %}
+{% block hero_section %}{% endblock %}
+{% block product_section %}{% endblock %}
+
+{% block content %}
+
+<div style="max-width:1350px;margin:30px auto;padding:0 16px;">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;flex-wrap:wrap;gap:12px;">
+        <div>
+            <h1 style="font-size:28px;font-weight:900;color:var(--dark);">📋 مدیریت سفارشات</h1>
+            <p style="color:var(--gray);">{{ orders.count }} سفارش</p>
+        </div>
+        <a href="{% url 'accounts:admin_dashboard' %}" style="padding:10px 24px;border-radius:40px;background:var(--primary);color:#fff;text-decoration:none;font-weight:600;transition:all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+            ← بازگشت
+        </a>
+    </div>
+
+    <div style="background:var(--white);border-radius:24px;padding:20px;border:1px solid #ecf3ec;box-shadow:var(--shadow);overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+            <thead>
+                <tr style="border-bottom:2px solid #ecf3ec;">
+                    <th style="padding:12px 8px;text-align:right;">#</th>
+                    <th style="padding:12px 8px;text-align:right;">شماره سفارش</th>
+                    <th style="padding:12px 8px;text-align:right;">کاربر</th>
+                    <th style="padding:12px 8px;text-align:right;">مبلغ</th>
+                    <th style="padding:12px 8px;text-align:right;">وضعیت</th>
+                    <th style="padding:12px 8px;text-align:right;">تاریخ</th>
+                    <th style="padding:12px 8px;text-align:right;">عملیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr style="border-bottom:1px solid #ecf3ec;">
+                    <td style="padding:12px 8px;font-weight:600;">{{ forloop.counter }}</td>
+                    <td style="padding:12px 8px;font-weight:700;color:var(--primary-dark);">#{{ order.order_number }}</td>
+                    <td style="padding:12px 8px;">{{ order.user.phone }}</td>
+                    <td style="padding:12px 8px;font-weight:700;color:var(--primary-dark);">{{ order.total_amount|floatformat:0 }}</td>
+                    <td style="padding:12px 8px;">
+                        <span style="padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600;background:
+                            {% if order.status == 'pending' %}#fff3e0;color:#f39c12
+                            {% elif order.status == 'processing' %}#e3f2fd;color:#2196f3
+                            {% elif order.status == 'shipped' %}#e8f5e9;color:#4caf50
+                            {% elif order.status == 'delivered' %}#e8f5e9;color:#27ae60
+                            {% else %}#fce4ec;color:#e74c3c{% endif %};">
+                            {{ order.get_status_display }}
+                        </span>
+                    </td>
+                    <td style="padding:12px 8px;font-size:12px;color:var(--gray);">{{ order.created_at|date:"Y/m/d H:i" }}</td>
+                    <td style="padding:12px 8px;">
+                        <a href="{% url 'accounts:admin_order_detail' order.id %}" style="color:var(--primary);text-decoration:none;font-weight:600;padding:4px 12px;border-radius:12px;border:1px solid var(--primary);transition:all 0.3s ease;" onmouseover="this.style.background='var(--primary)';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='var(--primary)'">جزئیات</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" style="padding:40px;text-align:center;color:var(--gray);">هیچ سفارشی وجود ندارد.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}
